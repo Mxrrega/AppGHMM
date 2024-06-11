@@ -12,7 +12,7 @@ export default function Pessoa({ pessoaNome, pessoaFoto }) {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: 'red',
+        backgroundColor: '#C0C0C0',
         borderRadius: 8,
         padding: 16,
         marginBottom: 16,
@@ -21,26 +21,20 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 4,
         elevation: 4,
-        marginVertical: 10, 
-        marginHorizontal: 10,
+        borderWidth: 1,
     },
     title: {
-        fontSize: 18,
+        fontSize: 25,
         fontWeight: 'bold',
-        marginBottom: 8,
+        marginBottom: 10,
+        textAlign: 'center',
+
     },
     image: {
-        width: '100%',
+        width: '90%',
         height: 200,
         marginBottom: 8,
         borderRadius: 8,
-    },
-    category: {
-        fontSize: 16,
-        marginBottom: 4,
-    },
-    price: {
-        fontSize: 16,
-        fontWeight: 'bold',
+        alignSelf: 'center'
     },
 });
