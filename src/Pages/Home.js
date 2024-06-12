@@ -4,12 +4,13 @@ import { FlatList } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Pessoa from '../Components/Pessoa';
 import { format, isValid } from 'date-fns';
+import Observacoes from '../Components/Observacoes';
 
-export default function Home({pessoaNome, pessoaFoto }) {
+export default function Home({ pessoaNome, pessoaFoto, observacaoDescricao, observacaoLocal, observacaoData }) {
 
   const [pessoas, setPessoas] = useState([]);
-  const [error, setErroAPI] = useState( false );
-  const [descricao, setDescricao] = useState( false );
+  const [error, setErroAPI] = useState(false);
+  const [descricao, setDescricao] = useState(false);
 
   const [pessoaId, setPessoaId] = useState();
   const [pessoaNomeGet, setPessoaNome] = useState();
@@ -25,76 +26,70 @@ export default function Home({pessoaNome, pessoaFoto }) {
   const [usuarioId, setUsuarioId] = useState();
 
   const [observacao, setObservacao] = useState([]);
-  const [observacaoId, setObservacaoId] = useState();
-  const [observacaoDescricao, setObservacaoDescricao] = useState();
-  const [observacaoLocal, setObservacaoLocal] = useState();
-  const [observacaoData, setObservacaoData] = useState();
   
 
 
-  async function getPessoas()
-  {
-    await fetch('http://10.139.75.20:5251/api/Pessoa/GetAll',{
-            method:'GET',
-            headers: {
-                'content-type': 'application/json'
-            }
-        })
-        .then(res => res.json())
-        .then(json => setPessoas( json ))
-        .catch(err => setErroAPI( true ) )
+  async function getPessoas() {
+    await fetch('http://10.139.75.20:5251/api/Pessoa/GetAll', {
+      method: 'GET',
+      headers: {
+        'content-type': 'application/json'
+      }
+    })
+      .then(res => res.json())
+      .then(json => setPessoas(json))
+      .catch(err => setErroAPI(true))
   }
 
   async function getPessoaDesc(id) {
-    await fetch('http://10.139.75.20:5251/api/Pessoa/GetPessoaId/' + id,{
-            method:'GET',
-            headers: {
-                'content-type': 'application/json'
-            }
+    await fetch('http://10.139.75.20:5251/api/Pessoa/GetPessoaId/' + id, {
+      method: 'GET',
+      headers: {
+        'content-type': 'application/json'
+      }
+    })
+      .then(res => res.json())
+      .then(json => { setPessoaId(json); return json; })
+      .then(json => {
+        setPessoaId(json.pessoaId);
+        setPessoaNome(json.pessoaNome);
+        setPessoaRoupa(json.pessoaRoupa);
+        setPessoaCor(json.pessoaCor);
+        setPessoaSexo(json.pessoaSexo);
+        setPessoaLocalDesaparecimento(json.pessoaLocalDesaparecimento);
+        setPessoaFoto(json.pessoaFoto);
+        setPessoaDtDesaparecimento(json.pessoaDtDesaparecimento);
+        setPessoaDtEncontro(json.pessoaDtEncontro);
+        setPessoaStatus(json.pessoaStatus);
+        setUsuarioId(json.usuarioId);
+      })
+        await fetch('http://10.139.75.20:5251/api/Observacoes/GetObservacoesId/' + id , {
+          method: 'GET',
+          headers: {
+            'content-type': 'application/json'
+          }
         })
         .then(res => res.json())
-        .then(json => setObservacao(json ))
-        .then(json => {
-          setPessoaId(json.pessoaId);
-          setPessoaNome(json.pessoaNome);
-          setPessoaRoupa(json.pessoaRoupa);
-          setPessoaCor(json.pessoaCor);
-          setPessoaSexo(json.pessoaSexo);
-          setPessoaLocalDesaparecimento(json.pessoaLocalDesaparecimento);
-          setPessoaFoto(json.pessoaFoto);
-          setPessoaDtDesaparecimento(json.pessoaDtDesaparecimento);
-          setPessoaDtEncontro(json.pessoaDtEncontro);
-          setPessoaStatus(json.pessoaStatus);
-          setUsuarioId(json.usuarioId);
-        })
-
-        await fetch('http://10.139.75.20:5251/api/Observacoes/GetObservacoesId/' + id,{
-          method:'GET',
-          headers: {
-              'content-type': 'application/json'
-          }
-      })
-      .then(res => res.json())
-      .then(json => {
-        setObservacaoId(json.observacaoId);
-        setObservacaoDescricao(json.observacaoDescricao);
-        setObservacaoLocal(json.observacaoLocal);
-        setObservacaoData(json.observacaoData);
-      })
+        .then(json => {setObservacao(json); return json; })
+        .then(json => console.log(json))
+        .catch(err => setErroAPI(true))
+      
   }
+
   
-  useEffect( () => {
+
+  useEffect(() => {
     getPessoas();
-  }, [] )
+  }, [])
 
   useFocusEffect(
     React.useCallback(() => {
       getPessoas();
-    }, [] )
+    }, [])
   )
 
   const pessoasFiltradas = pessoas.filter(pessoa => pessoa.pessoaStatus === 1);
-  const StatusPessoa = pessoaStatus === 1? 'Não Encontrado' : pessoaStatus;
+  const StatusPessoa = pessoaStatus === 1 ? 'Não Encontrado' : pessoaStatus;
 
   return (
     <View style={styles.container}>
@@ -106,7 +101,7 @@ export default function Home({pessoaNome, pessoaFoto }) {
             data={pessoasFiltradas}
             renderItem={({ item }) =>
               <View style={styles.boxExibir}>
-                <Pessoa 
+                <Pessoa
                   pessoaNome={item.pessoaNome}
                   pessoaFoto={item.pessoaFoto}
                 />
@@ -120,40 +115,44 @@ export default function Home({pessoaNome, pessoaFoto }) {
         </>
       ) : (
         <View style={styles.detalhes}>
-      <Text style={styles.btnLoginText}>Detalhes</Text>
-      <View>
-        <Image source={{ uri: pessoaFotoGet }} style={styles.image} />
-        <Text style={styles.btnLoginText}>Nome: {pessoaNomeGet}</Text>
-        <Text style={styles.btnLoginText}>Roupa: {pessoaRoupa}</Text>
-        <Text style={styles.btnLoginText}>Cor: {pessoaCor}</Text>
-        <Text style={styles.btnLoginText}>Sexo: {pessoaSexo}</Text>
-        <Text style={styles.btnLoginText}>Local Desaparecimento: {pessoaLocalDesaparecimento}</Text>
-        
-        {isValid(new Date(pessoaDtDesaparecimento)) ? (
-          <Text style={styles.btnLoginText}>Data de Desaparecimento: {format(new Date(pessoaDtDesaparecimento), 'dd/MM/yyyy HH:mm')}</Text>
-        ) : (
-          <Text style={styles.btnLoginText}>Data de Desaparecimento inválida</Text>
-        )}
-        <Text style={styles.btnLoginText}>Status: {StatusPessoa}</Text>
-        <Text style={styles.btnLoginText}>Usuario: {usuarioId}</Text>
+          <Text style={styles.btnLoginText}>Detalhes</Text>
+          <View>
+            <Image source={{ uri: pessoaFotoGet }} style={styles.image} />
+            <Text style={styles.btnLoginText}>Nome: {pessoaNomeGet}</Text>
+            <Text style={styles.btnLoginText}>Roupa: {pessoaRoupa}</Text>
+            <Text style={styles.btnLoginText}>Cor: {pessoaCor}</Text>
+            <Text style={styles.btnLoginText}>Sexo: {pessoaSexo}</Text>
+            <Text style={styles.btnLoginText}>Local Desaparecimento: {pessoaLocalDesaparecimento}</Text>
 
-        <View> 
-          <FlatList 
-          style={styles.listaObservacao}
-          data={observacao}
-          keyExtractor={(item) => item.observacaoId}
-          />
-          <Text>Descrição da Obsevação: {observacaoDescricao}</Text> 
-          <Text>Local da Observação: {observacaoLocal}</Text> 
-          <Text>Data da Observação {format(new Date(observacaoData), 'dd/MM/yyyy HH:mm')}</Text> 
+            {isValid(new Date(pessoaDtDesaparecimento)) ? (
+              <Text style={styles.btnLoginText}>Data de Desaparecimento: {format(new Date(pessoaDtDesaparecimento), 'dd/MM/yyyy HH:mm')}</Text>
+            ) : (
+              <Text style={styles.btnLoginText}>Data de Desaparecimento inválida</Text>
+            )}
+            <Text style={styles.btnLoginText}>Status: {StatusPessoa}</Text>
+            <Text style={styles.btnLoginText}>Usuario: {usuarioId}</Text>
+
+
+            <FlatList
+              style={styles.flat}
+              data={observacao}
+              keyExtractor={(observacao) => item.observacaoId.toString()}
+              renderItem={({ item }) => (
+                <View style={styles.observacaoContainer}>
+                  <Observacoes 
+                    observacaoDescricao={item.observacaoDescricao}
+                    observacaoLocal={item.observacaoLocal}
+                    observacaoData={item.observacaoData}
+                  />
+                </View>
+              )}
+            />
+          </View>
+
+          <TouchableOpacity onPress={() => { setDescricao(false); }} style={styles.closeButton}>
+            <Text style={styles.closeButtonText}>Fechar</Text>
+          </TouchableOpacity>
         </View>
-        
-      </View>
-
-      <TouchableOpacity onPress={() => { setDescricao(false); }} style={styles.closeButton}>
-        <Text style={styles.closeButtonText}>Fechar</Text>
-      </TouchableOpacity>
-    </View>
       )}
     </View>
   );
@@ -179,7 +178,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 4,
-    marginVertical: 10, 
+    marginVertical: 10,
     marginHorizontal: 10,
   },
   header: {
@@ -210,24 +209,24 @@ const styles = StyleSheet.create({
   btnLoginText: {
     fontSize: 16,
     marginBottom: 10,
-    color: '#fff', 
+    color: '#fff',
   },
   image: {
     width: 100,
     height: 100,
-    borderRadius: 50, 
+    borderRadius: 50,
     marginBottom: 20,
   },
   closeButton: {
     marginTop: 20,
     paddingVertical: 10,
     paddingHorizontal: 20,
-    backgroundColor: '#f55', 
+    backgroundColor: '#f55',
     borderRadius: 5,
-    alignSelf: 'flex-end', 
+    alignSelf: 'flex-end',
   },
   closeButtonText: {
     fontSize: 16,
-    color: '#fff', 
+    color: '#fff',
   },
 });
