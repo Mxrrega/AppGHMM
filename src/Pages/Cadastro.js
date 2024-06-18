@@ -1,133 +1,160 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView, Image } from 'react-native';
+import Login from './Login';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-export default function Cadastro() {
+export default function Cadastro({ handle }) {
 
-  const [ usuarioId, setUsuarioId ] = useState(0);
-  const [ usuarioNome, setUsuarioNome ] = useState();
-  const [ usuarioTelefone, setUsuarioTelefone] = useState();
-  const [ usuarioEmail, setUsuarioEmail] = useState();
-  const [ usuarioSenha, setUsuarioSenha] = useState();
+  const [usuarioId, setUsuarioId] = useState(0);
+  const [usuarioNome, setUsuarioNome] = useState();
+  const [usuarioTelefone, setUsuarioTelefone] = useState();
+  const [usuarioEmail, setUsuarioEmail] = useState();
+  const [usuarioSenha, setUsuarioSenha] = useState();
 
   const [erro, setErro] = useState("");
   const [sucesso, setSucesso] = useState("");
 
+  const [login, setLogin] = useState(false);
+
+  if (login) {
+    return <Login handle={setLogin} />;
+  }
+
   async function Cadastrar() {
-    if ( !usuarioNome || !usuarioTelefone || !usuarioEmail || !usuarioSenha ) {
+    if (!usuarioNome || !usuarioTelefone || !usuarioEmail || !usuarioSenha) {
       Alert.alert('Erro', 'Por Favor, preencha todos os campos.');
       return;
     }
 
-    await fetch('http://10.139.75.20:5251/api/Usuario/CreateUsuario',{
-        method:'POST',
-        headers: {
-            'content-type': 'application/json'
-        },
-        body:JSON.stringify(
-            {
-              usuarioId: usuarioId,
-              usuarioNome: usuarioNome,
-              usuarioTelefone: usuarioTelefone,
-              usuarioEmail: usuarioEmail,
-              usuarioSenha: usuarioSenha
-            }
-        )
-        
+    await fetch('http://10.139.75.20:5251/api/Usuario/CreateUsuario', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify(
+        {
+          usuarioId: usuarioId,
+          usuarioNome: usuarioNome,
+          usuarioTelefone: usuarioTelefone,
+          usuarioEmail: usuarioEmail,
+          usuarioSenha: usuarioSenha
+        }
+      )
+
     })
-    .then(res=> (res.ok == true ) ? res.json() : false)
-    .then(json => (json.usuarioId ? setSucesso(true) : setErro(true)) )
-    .catch(err => setErro( true ) )
+      .then(res => (res.ok == true) ? res.json() : false)
+      .then(json => (json.usuarioId ? setSucesso(true) : setErro(true)))
+      .catch(err => setErro(true))
   };
 
   return (
-    <View style={css.container}>
-        { sucesso ? 
-        <View style={css.containerCadastro}>
-          <Text style={css.textCadastro}>Obrigado por se Cadastrar. Seu cadastro foi realizado com sucesso</Text> 
-          <TouchableOpacity style={css.btnCreate} onPress={() => {setSucesso(false), setUsuarioNome(''), setUsuarioTelefone(''), setUsuarioEmail(''), setUsuarioSenha('') }}>
-            <Text style={css.btnLoginText}>Voltar</Text>
+    <ScrollView contentContainerStyle={styles.container}>
+
+
+      {sucesso ?
+        <View style={styles.container}>
+          <Text style={styles.textCadastro}>Obrigado por se Cadastrar. Seu cadastro foi realizado com sucesso</Text>
+          <TouchableOpacity style={styles.btnLogin} onPress={() => { setSucesso(false), setUsuarioNome(''), setUsuarioTelefone(''), setUsuarioEmail(''), setUsuarioSenha(''), handle(false) }}>
+            <Text style={styles.btnLoginText}>Voltar</Text>
           </TouchableOpacity>
         </View>
-        
+
         :
-      <View style={css.editar}>     
-        <TextInput
-          style={css.input}
-          placeholder='Nome Usuário'
-          value={usuarioNome}
-          onChangeText={setUsuarioNome}
-        />
-        <TextInput
-          style={css.input}
-          placeholder='Telefone Usuário'
-          value={usuarioTelefone}
-          onChangeText={setUsuarioTelefone}
-        />
-        <TextInput
-          style={css.input}
-          placeholder='usuario email'
-          value={usuarioEmail}
-          onChangeText={setUsuarioEmail}
-        />
-        <TextInput
-          style={css.input}
-          placeholder='usuario senha'
-          value={usuarioSenha}
-          onChangeText={setUsuarioSenha}
-        />
-      
-      <TouchableOpacity style={css.btnCreate} onPress={Cadastrar}>
-        <Text style={css.btnLoginText}>Cadastrar</Text>
-      </TouchableOpacity>
-      </View>
-}
-      { erro && <Text>Revise Cuidadosamente os campos!</Text>}
-    </View>
+        <>
+          <View style={styles.successContainer}>
+            <TouchableOpacity style={styles.backButton} onPress={() => handle(false)}>
+              <MaterialCommunityIcons name="arrow-left" color={'white'} size={30} />
+            </TouchableOpacity>
+          </View>
+          <Image source={require("../../assets/logo.png")} style={styles.logo} />
+          <TextInput
+            style={styles.input}
+            placeholder='Nome do Usuário'
+            value={usuarioNome}
+            onChangeText={setUsuarioNome}
+            placeholderTextColor="white"
+          />
+          <TextInput
+            style={styles.input}
+            placeholder='Telefone do Usuário'
+            value={usuarioTelefone}
+            onChangeText={setUsuarioTelefone}
+            placeholderTextColor="white"
+          />
+          <TextInput
+            style={styles.input}
+            placeholder='Email do Usuário'
+            value={usuarioEmail}
+            onChangeText={setUsuarioEmail}
+            placeholderTextColor="white"
+          />
+          <TextInput
+            style={styles.input}
+            placeholder='Senha do Usuário'
+            value={usuarioSenha}
+            onChangeText={setUsuarioSenha}
+            placeholderTextColor="white"
+          />
+
+          <TouchableOpacity style={styles.btnLogin} onPress={Cadastrar}>
+            <Text style={styles.btnLoginText}>Cadastrar</Text>
+          </TouchableOpacity>
+        </>
+      }
+      {erro && <Text>Revise Cuidadosamente os campos!</Text>}
+    </ScrollView>
   );
 }
 
-const css = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: '#121212', 
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    alignContent: "center",
+    backgroundColor: "#191919"
+  },
+  successContainer: {
+    alignSelf: 'flex-start',
     padding: 16,
   },
-  containerCadastro: {
-    marginTop: 50,
-    backgroundColor: '#333333',
-    borderRadius: 8,
-    padding: 30,
-    marginVertical: 8,
+  backButton: {
+
+    paddingHorizontal: 20,
+    alignSelf: 'flex-start',
   },
   textCadastro: {
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 20,
+    color: '#ffff',
+    padding: 50,
+
+  },
+  btnLogin: {
+    width: "90%",
+    height: 50,
+    borderWidth: 1,
+    borderRadius: 10,
     marginTop: 30,
+    backgroundColor: "#0195fd"
   },
   btnLoginText: {
-    color: '#FFFFFF', 
-    fontSize: 16,
-    textAlign: 'center',
+    color: "white",
+    lineHeight: 45,
+    textAlign: "center",
+    fontSize: 15,
+    fontWeight: "bold"
   },
-  editar: {
-    backgroundColor: '#1E1E1E', 
-    padding: 16,
-    borderRadius: 8,
-    marginTop: 60
+  logo: {
+    width: "60%",
+    resizeMode: "contain"
   },
   input: {
-    backgroundColor: '#333333', 
-    color: '#FFFFFF', 
-    padding: 10,
-    borderRadius: 8,
-    marginVertical: 8,
-  },
-  btnCreate: {
-    backgroundColor: '#03DAC9', 
-    padding: 10,
-    borderRadius: 8,
-    marginVertical: 4,
-     marginTop: 30
+    width: "90%",
+    height: 50,
+    borderRadius: 10,
+    marginBottom: 15,
+    padding: 15,
+    backgroundColor: "#262626",
+    color: "white"
   },
 });

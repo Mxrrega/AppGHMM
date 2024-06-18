@@ -1,54 +1,58 @@
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native'
 import React, { useContext, useState } from 'react'
 import { AuthContext } from '../Context/AuthContext';
+import Cadastro from './Cadastro';
 
 export default function Login() {
 
     const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("");
+    const [cadastro, setCadastro] = useState(false);
 
     const { Login, error } = useContext(AuthContext);
 
     function RealizaLogin() {
        Login( email, senha );
     }
-
+    if (cadastro) {
+        return <Cadastro handle={setCadastro} />;
+      }
 
     return (
-        <ScrollView contentContainerStyle={css.container}>
-            <Image source={require("../../assets/logo.png")} style={css.logo} />
+        <ScrollView contentContainerStyle={styles.container}>
+            <Image source={require("../../assets/logo.png")} style={styles.logo} />
             <TextInput
                 inputMode="email"
-                placeholder="Email"
-                style={css.input}
+                placeholder="Email do Usuário"
+                style={styles.input}
                 value={email}
                 onChangeText={(digitado) => setEmail(digitado)}
                 placeholderTextColor="white"
             />
             <TextInput
                 inputMode="text"
-                placeholder="Password"
+                placeholder="Senha do Usuário"
                 secureTextEntry={true}
-                style={css.input}
+                style={styles.input}
                 value={senha}
                 onChangeText={(digitado) => setSenha(digitado)}
                 placeholderTextColor="white"
             />
-            <View style={css.forgot}>
-                <Text style={css.forgotText}>Esqueceu a senha?</Text>
-            </View>
-            <TouchableOpacity style={css.btnLogin} onPress={RealizaLogin}>
-                <Text style={css.btnLoginText}>Log In</Text>
+            <TouchableOpacity onPress={() => setCadastro(true)} style={styles.forgot} >
+                <Text style={styles.forgotText}>Cadastre-se</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.btnLogin} onPress={RealizaLogin}>
+                <Text style={styles.btnLoginText}>ENTRAR</Text>
             </TouchableOpacity>
             {error &&
-                <View style={css.error}>
-                    <Text style={css.errorText}>Revise os campos. Tente novamente!</Text>
+                <View style={styles.error}>
+                    <Text style={styles.errorText}>Revise os campos. Tente novamente!</Text>
                 </View>
             }
         </ScrollView>
     )
 }
-const css = StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
         flexGrow: 1,
         width: "100%",

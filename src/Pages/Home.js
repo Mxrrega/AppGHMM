@@ -1,12 +1,12 @@
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, Image } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { FlatList } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Pessoa from '../Components/Pessoa';
 import { format, isValid } from 'date-fns';
-import Observacoes from '../Components/Observacoes';
+import NovaObservacao from './NovaObservacao';
 
-export default function Home({ pessoaNome, pessoaFoto, observacaoDescricao, observacaoLocal, observacaoData }) {
+export default function Home({ pessoaNome, pessoaFoto }) {
 
   const [pessoas, setPessoas] = useState([]);
   const [error, setErroAPI] = useState(false);
@@ -24,9 +24,17 @@ export default function Home({ pessoaNome, pessoaFoto, observacaoDescricao, obse
   const [pessoaDtEncontro, setPessoaDtEncontro] = useState();
   const [pessoaStatus, setPessoaStatus] = useState();
   const [usuarioId, setUsuarioId] = useState();
+  const [usuarioNome, setUsuarioNome] = useState();
+
 
   const [observacao, setObservacao] = useState([]);
-  
+  const [observacaoId, setObservacaoId] = useState();
+  const [observacaoDescricao, setObservacaoDescricao] = useState();
+  const [observacaoLocal, setObservacaoLocal] = useState();
+  const [observacaoData, setObservacaoData] = useState();
+
+  const [exibirNovaObs, setExibirNovaObs] = useState(false);
+
 
 
   async function getPessoas() {
@@ -49,7 +57,6 @@ export default function Home({ pessoaNome, pessoaFoto, observacaoDescricao, obse
       }
     })
       .then(res => res.json())
-      .then(json => { setPessoaId(json); return json; })
       .then(json => {
         setPessoaId(json.pessoaId);
         setPessoaNome(json.pessoaNome);
@@ -61,22 +68,31 @@ export default function Home({ pessoaNome, pessoaFoto, observacaoDescricao, obse
         setPessoaDtDesaparecimento(json.pessoaDtDesaparecimento);
         setPessoaDtEncontro(json.pessoaDtEncontro);
         setPessoaStatus(json.pessoaStatus);
-        setUsuarioId(json.usuarioId);
-      })
-        await fetch('http://10.139.75.20:5251/api/Observacoes/GetObservacoesId/' + id , {
-          method: 'GET',
-          headers: {
-            'content-type': 'application/json'
-          }
-        })
-        .then(res => res.json())
-        .then(json => {setObservacao(json); return json; })
-        .then(json => console.log(json))
-        .catch(err => setErroAPI(true))
-      
-  }
+        setUsuarioId(json.usuarioId); 
 
-  
+        return fetch(`http://10.139.75.20:5251/api/Usuario/GetUsuarioId/` + usuarioId);
+      })
+      .then(res => res.json())
+      .then(usuario => {
+        setUsuarioNome(usuario.usuarioNome); 
+      })
+      .catch(err => console.error('Erro ao buscar informações do usuário', err));
+
+    await fetch('http://10.139.75.20:5251/api/Observacoes/GetObservacoesId/' + id, {
+      method: 'GET',
+      headers: {
+        'content-type': 'application/json'
+      }
+    })
+      .then(res => res.json())
+      .then(json => {
+        setObservacaoId(json.observacaoId);
+        setObservacaoDescricao(json.observacaoDescricao);
+        setObservacaoLocal(json.observacaoLocal);
+        setObservacaoData(json.observacaoData);
+      })
+
+  }
 
   useEffect(() => {
     getPessoas();
@@ -90,6 +106,10 @@ export default function Home({ pessoaNome, pessoaFoto, observacaoDescricao, obse
 
   const pessoasFiltradas = pessoas.filter(pessoa => pessoa.pessoaStatus === 1);
   const StatusPessoa = pessoaStatus === 1 ? 'Não Encontrado' : pessoaStatus;
+
+  if (exibirNovaObs) {
+    return <NovaObservacao handle={setExibirNovaObs} />;
+  }
 
   return (
     <View style={styles.container}>
@@ -105,7 +125,7 @@ export default function Home({ pessoaNome, pessoaFoto, observacaoDescricao, obse
                   pessoaNome={item.pessoaNome}
                   pessoaFoto={item.pessoaFoto}
                 />
-                <TouchableOpacity onPress={() => { setDescricao(true); getPessoaDesc(item.pessoaId)}}>
+                <TouchableOpacity onPress={() => { setDescricao(true); getPessoaDesc(item.pessoaId) }}>
                   <Text style={styles.btnDescricao}>Detalhes</Text>
                 </TouchableOpacity>
               </View>
@@ -130,28 +150,26 @@ export default function Home({ pessoaNome, pessoaFoto, observacaoDescricao, obse
               <Text style={styles.btnLoginText}>Data de Desaparecimento inválida</Text>
             )}
             <Text style={styles.btnLoginText}>Status: {StatusPessoa}</Text>
-            <Text style={styles.btnLoginText}>Usuario: {usuarioId}</Text>
+            <Text style={styles.btnLoginText}>Usuario: {usuarioNome}</Text>
+
+            <View style={styles.containerObs}>
+              <Text style={styles.title}>Observações:</Text>
+              <Text style={styles.text}>Descrição da Observação: {observacaoDescricao}</Text>
+              <Text style={styles.text}>Local da Observação: {observacaoLocal}</Text>
+              <Text style={styles.text}>Data da Observação: {observacaoData ? format(new Date(observacaoData), 'dd/MM/yyyy HH:mm') : 'Data não disponível'}</Text>
+            </View>
 
 
-            <FlatList
-              style={styles.flat}
-              data={observacao}
-              keyExtractor={(observacao) => item.observacaoId.toString()}
-              renderItem={({ item }) => (
-                <View style={styles.observacaoContainer}>
-                  <Observacoes 
-                    observacaoDescricao={item.observacaoDescricao}
-                    observacaoLocal={item.observacaoLocal}
-                    observacaoData={item.observacaoData}
-                  />
-                </View>
-              )}
-            />
+          </View>
+          <View style={styles.viewButton}>
+            <TouchableOpacity onPress={() => setExibirNovaObs(true)} style={styles.NovaObsButton}>
+              <Text style={styles.NovaObsText}>Nova Observação</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => { setDescricao(false); }} style={styles.closeButton}>
+              <Text style={styles.closeButtonText}>Fechar</Text>
+            </TouchableOpacity>
           </View>
 
-          <TouchableOpacity onPress={() => { setDescricao(false); }} style={styles.closeButton}>
-            <Text style={styles.closeButtonText}>Fechar</Text>
-          </TouchableOpacity>
         </View>
       )}
     </View>
@@ -217,16 +235,46 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     marginBottom: 20,
   },
-  closeButton: {
+  viewButton: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginTop: 20,
+  },
+  closeButton: {
     paddingVertical: 10,
     paddingHorizontal: 20,
     backgroundColor: '#f55',
     borderRadius: 5,
-    alignSelf: 'flex-end',
   },
   closeButtonText: {
     fontSize: 16,
     color: '#fff',
+  },
+  NovaObsButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: 'blue',
+    borderRadius: 5,
+  },
+  NovaObsText: {
+    fontSize: 16,
+    color: '#fff',
+  },
+  containerObs: {
+    backgroundColor: '#1E1E1E',
+    borderRadius: 8,
+    marginTop: 10,
+    marginBottom: 10
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 10,
+  },
+  text: {
+    fontSize: 16,
+    color: '#FFFFFF',
+    marginBottom: 8,
   },
 });

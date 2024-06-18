@@ -8,6 +8,8 @@ import { AuthContext } from '../Context/AuthContext';
 import Login from '../Pages/Login';
 import Cadastro from '../Pages/Cadastro';
 import Home from '../Pages/Home';
+import Encontrados from '../Pages/Encontrados';
+import CadastrarDesaparecido from '../Pages/CadastrarDesaparecido';
 
 
 const Tab = createBottomTabNavigator();
@@ -33,7 +35,7 @@ export default function Rotas() {
                 }}
             >
                 <Tab.Screen
-                    name="Busca"
+                    name="Home"
                     component={Home}
                     options={{
                         tabBarIcon: ({ color, size }) => (
@@ -43,8 +45,18 @@ export default function Rotas() {
 
                 />
                 <Tab.Screen
-                    name="Cadastro"
-                    component={Cadastro}
+                    name="Encontrados"
+                    component={Encontrados}
+                    options={{
+                        tabBarIcon: ({ color, size }) => (
+                            <MaterialCommunityIcons name="account-multiple-check" color={color} size={size} />
+                        ),
+                    }}
+
+                />
+                <Tab.Screen
+                    name="Cadastrar Desaparecido"
+                    component={CadastrarDesaparecido}
                     options={{
                         tabBarIcon: ({ color, size }) => (
                             <MaterialCommunityIcons name="plus-box" color={color} size={size} />
