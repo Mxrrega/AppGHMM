@@ -91,6 +91,7 @@ export default function Cadastro({ handle }) {
           <TextInput
             style={styles.input}
             placeholder='Senha do Usuário'
+            secureTextEntry={true}
             value={usuarioSenha}
             onChangeText={setUsuarioSenha}
             placeholderTextColor="white"

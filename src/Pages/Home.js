@@ -25,6 +25,7 @@ export default function Home({ pessoaNome, pessoaFoto }) {
   const [pessoaStatus, setPessoaStatus] = useState();
   const [usuarioId, setUsuarioId] = useState();
   const [usuarioNome, setUsuarioNome] = useState();
+  const [usuarioNomeItem, setUsuarioNomeItem] = useState();
 
 
   const [observacao, setObservacao] = useState([]);
@@ -108,7 +109,11 @@ export default function Home({ pessoaNome, pessoaFoto }) {
   const StatusPessoa = pessoaStatus === 1 ? 'Não Encontrado' : pessoaStatus;
 
   if (exibirNovaObs) {
-    return <NovaObservacao handle={setExibirNovaObs} />;
+    return <NovaObservacao handle={setExibirNovaObs} pessoaNome={usuarioNomeItem} />;
+  }
+
+  function setarItem(item) {
+    setUsuarioNomeItem(item)
   }
 
   return (
@@ -125,7 +130,7 @@ export default function Home({ pessoaNome, pessoaFoto }) {
                   pessoaNome={item.pessoaNome}
                   pessoaFoto={item.pessoaFoto}
                 />
-                <TouchableOpacity onPress={() => { setDescricao(true); getPessoaDesc(item.pessoaId) }}>
+                <TouchableOpacity onPress={() => { setDescricao(true); getPessoaDesc(item.pessoaId), setarItem(item) }}>
                   <Text style={styles.btnDescricao}>Detalhes</Text>
                 </TouchableOpacity>
               </View>

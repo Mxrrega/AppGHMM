@@ -1,15 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,  useContext } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, TextInput, Alert } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { AuthContext } from '../Context/AuthContext';
 
-export default function NovaObservacao({ handle }) {
+export default function NovaObservacao({ handle, pessoaNome }) {
 
   const [observacaoId, SetObservacaoId] = useState(0);
   const [observacaoDescricao, setObservacaoDescricao] = useState();
   const [observacaoLocal, setObservacaoLocal] = useState();
   const [observacaoData, setObservacaoData] = useState();
   const [pessoaId, setPessoaId] = useState();
-  const [usuarioId, setUsuarioId] = useState();
+
+  const { usuarioId } = useContext(AuthContext);
 
   const [erro, setErro] = useState("");
   const [sucesso, setSucesso] = useState("");
@@ -38,7 +40,7 @@ export default function NovaObservacao({ handle }) {
       )
 
     })
-      .then(res => (res.ok == true) ? res.json() : false)
+      .then(res => res.json())
       .then(json => console.log(json))
       .then(json => (json.observacaoId ? setSucesso(true) : setErro(true)) )
       .catch(err => setErro(true))
@@ -50,7 +52,7 @@ export default function NovaObservacao({ handle }) {
       { sucesso ? 
         <View style={styles.successContainer}>
           <Text style={styles.textCadastroObs}>Observação Cadastrada. Obrigado por colaborar com nossas buscas.</Text> 
-          <TouchableOpacity style={styles.btnVoltar} onPress={() => { setSucesso(false); setObservacaoDescricao(''), setObservacaoLocal(''), setObservacaoData(''), setPessoaId(''), setUsuarioId('') }}>
+          <TouchableOpacity style={styles.btnVoltar} onPress={() => { setSucesso(false); setObservacaoDescricao(''), setObservacaoLocal(''), setObservacaoData(''), setPessoaId('') }}>
             <Text style={styles.btnText}>Voltar</Text>
           </TouchableOpacity>
         </View>
@@ -68,36 +70,23 @@ export default function NovaObservacao({ handle }) {
               placeholder='Descrição da Observação'
               value={observacaoDescricao}
               onChangeText={setObservacaoDescricao}
-              placeholderTextColor="#aaa"
+              placeholderTextColor="white"
             />
             <TextInput
               style={styles.campos}
               placeholder='Local da Observação'
               value={observacaoLocal}
               onChangeText={setObservacaoLocal}
-              placeholderTextColor="#aaa"
+              placeholderTextColor="white"
             />
             <TextInput
               style={styles.campos}
               placeholder='Data da Observação (AAAA-MM-DD)'
               value={observacaoData}
               onChangeText={setObservacaoData}
-              placeholderTextColor="#aaa"
+              placeholderTextColor="white"
             />
-            <TextInput
-              style={styles.campos}
-              placeholder='Id da Pessoa'
-              value={pessoaId}
-              onChangeText={setPessoaId}
-              placeholderTextColor="#aaa"
-            />
-            <TextInput
-              style={styles.campos}
-              placeholder='Id do Usuário'
-              value={usuarioId}
-              onChangeText={setUsuarioId}
-              placeholderTextColor="#aaa"
-            />
+            <Text style={styles.campos}>Descrição para: {pessoaNome.pessoaNome}</Text>
             <TouchableOpacity style={styles.submitButton} onPress={CadastrarNovaObservacao}>
               <Text style={styles.submitButtonText}>Cadastrar</Text>
             </TouchableOpacity>
