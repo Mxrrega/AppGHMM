@@ -3,6 +3,9 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import HomeUsuario from '../Pages/HomeUsuario';
+import LoginScreen from '../Pages/Login';
+import CadastroScreen from '../Pages/Cadastro';
+import CadastroMaquina from '../Pages/CadastroMaquina';
 
 const Tab = createBottomTabNavigator();
 
@@ -29,7 +32,33 @@ export default function Rotas() {
                             <MaterialCommunityIcons name="home" color={color} size={size} />
                         ),
                     }}
-
+                />
+                <Tab.Screen
+                    name="Login"
+                    component={LoginScreen}
+                    options={{
+                        tabBarIcon: ({ color, size }) => (
+                            <MaterialCommunityIcons name="home" color={color} size={size} />
+                        ),
+                    }}
+                />
+                <Tab.Screen
+                    name="Cadastro"
+                    component={CadastroScreen}
+                    options={{
+                        tabBarIcon: ({ color, size }) => (
+                            <MaterialCommunityIcons name="check" color={color} size={size} />
+                        ),
+                    }}
+                />
+                <Tab.Screen
+                    name="CadastroMaquina"
+                    component={CadastroMaquina}
+                    options={{
+                        tabBarIcon: ({ color, size }) => (
+                            <MaterialCommunityIcons name="plus" color={color} size={size} />
+                        ),
+                    }}
                 />
             </Tab.Navigator>
         </NavigationContainer>

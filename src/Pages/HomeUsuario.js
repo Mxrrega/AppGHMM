@@ -1,89 +1,70 @@
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { View, Text, StyleSheet, Image, FlatList } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { FlatList } from 'react-native';
 import Maquinas from '../Components/Maquinas';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function Home() {
+  const [maquinas, setMaquinas] = useState([]);
+  const [error, setError] = useState(false);
 
-  const maquinas = [
-    {
-      maquinaId: '1',
-      maquinaFoto: 'https://s7d2.scene7.com/is/image/Caterpillar/CM20220621-a2314-eb542',
-    },
-    {
-      maquinaId: '2',
-      maquinaFoto: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdNO8FP5l45UWQ8RAfp65MmCOt6HfU50rV-Q&s',
-    },
-    {
-      maquinaId: '3',
-      maquinaFoto: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR1I0dhUXxhDud20er4pGX2dUHccNC1ojxdrw&s',
-    },
-    {
-      maquinaId: '4',
-      maquinaFoto: 'https://nac.cni.com.br/blog/wp-content/uploads/2021/11/linhas-de-credito-maquinas-industriais-1.jpg',
-    },
-    {
-      maquinaId: '5',
-      maquinaFoto: 'https://nac.cni.com.br/blog/wp-content/uploads/2021/11/linhas-de-credito-maquinas-industriais-1.jpg',
-    },
-    {
-      maquinaId: '6',
-      maquinaFoto: 'https://nac.cni.com.br/blog/wp-content/uploads/2021/11/linhas-de-credito-maquinas-industriais-1.jpg',
-    },
-    {
-      maquinaId: '7',
-      maquinaFoto: 'https://nac.cni.com.br/blog/wp-content/uploads/2021/11/linhas-de-credito-maquinas-industriais-1.jpg',
-    },
-    {
-      maquinaId: '8',
-      maquinaFoto: 'https://nac.cni.com.br/blog/wp-content/uploads/2021/11/linhas-de-credito-maquinas-industriais-1.jpg',
-    },
-    {
-      maquinaId: '9',
-      maquinaFoto: 'https://nac.cni.com.br/blog/wp-content/uploads/2021/11/linhas-de-credito-maquinas-industriais-1.jpg',
-    },
-    {
-      maquinaId: '10',
-      maquinaFoto: 'https://nac.cni.com.br/blog/wp-content/uploads/2021/11/linhas-de-credito-maquinas-industriais-1.jpg',
-    },
-    {
-      maquinaId: '11',
-      maquinaFoto: 'https://nac.cni.com.br/blog/wp-content/uploads/2021/11/linhas-de-credito-maquinas-industriais-1.jpg',
-    },
-    {
-      maquinaId: '12',
-      maquinaFoto: 'https://nac.cni.com.br/blog/wp-content/uploads/2021/11/linhas-de-credito-maquinas-industriais-1.jpg',
-    },
+  async function getMaquinas() {
+    try {
+      const response = await fetch('http://10.139.75.18:5251/api/Maquina/GetAllMaquinas', {
+        method: 'GET',
+        headers: {
+          'content-type': 'application/json'
+        }
+      });
+      const data = await response.json();
+      setMaquinas(data); 
+    } catch (err) {
+      setError(true);
+    }
+  }
 
-  ];
+  useEffect(() => {
+    getMaquinas();
+  }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      getMaquinas();
+    }, [])
+  )
 
   return (
     <View style={styles.container}>
-    <View style={styles.header}>
-      <Image source={require("../../assets/Logo GHMM.png")} style={styles.logo} />
-    </View>
-     
-    <View style={styles.subHeader}>
-    <Text style={styles.greetingText}>Olá, José!</Text>
-    <View style={styles.headerIcons}>
-    <MaterialCommunityIcons name="cog" size={24} color="black" style={styles.iconSpacing} />
-    <MaterialCommunityIcons name="menu" size={24} color="black" style={styles.iconSpacing} />
+      <View style={styles.header}>
+        <Image source={require("../../assets/Logo GHMM.png")} style={styles.logo} />
       </View>
-    </View>
-    
-    
-    <FlatList
-      data={maquinas}
-      numColumns={2}
-      renderItem={({ item }) => (
-        <View style={styles.boxExibir}>
-          <Maquinas maquinaFoto={item.maquinaFoto} />
+
+      <View style={styles.subHeader}>
+        <Text style={styles.greetingText}>Olá, José!</Text>
+        <View style={styles.headerIcons}>
+          <MaterialCommunityIcons name="cog" size={24} color="black" style={styles.iconSpacing} />
+          <MaterialCommunityIcons name="menu" size={24} color="black" style={styles.iconSpacing} />
         </View>
+      </View>
+
+      {error ? (
+        <Text style={styles.errorText}>Erro ao carregar as máquinas!</Text>
+      ) : (
+        <FlatList
+          data={maquinas}
+          numColumns={2}
+          renderItem={({ item }) => (
+            <View style={styles.boxExibir}>
+              <Maquinas maquinaFoto={item.fotoUrl} 
+              maquinaModelo={item.modelo}
+              maquinaNumeroSerie={item.numeroSerie}
+              />
+            </View>
+          )}
+          keyExtractor={(item) => item.maquinaId.toString()}
+        />
       )}
-      keyExtractor={(item) => item.maquinaId}
-    />
-  </View>
+    </View>
   );
 }
 
@@ -94,7 +75,6 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: '#1E1E1E',
-    paddingVertical: 10,
     paddingHorizontal: 15,
   },
   subHeader: {
@@ -103,7 +83,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logo: {
-    width: "50%",
+    width: "30%",
     resizeMode: "contain",
     alignSelf: "center",
   },
@@ -129,24 +109,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingVertical: 20,
   },
-  maquinaContainer: {
-    alignItems: 'center',
-  },
-  imagePlaceholder: {
-    width: 100,
-    height: 100,
-    backgroundColor: '#C0C0C0',
-    borderRadius: 10,
-    marginBottom: 10,
-  },
-  infoButton: {
-    backgroundColor: '#4682B4',
-    borderRadius: 10,
-    paddingHorizontal: 20,
-    paddingVertical: 5,
-  },
-  infoButtonText: {
-    color: '#FFFFFF',
-    fontWeight: 'bold',
+
+  errorText: {
+    textAlign: 'center',
+    color: 'red',
+    marginTop: 20,
   },
 });
