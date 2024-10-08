@@ -1,15 +1,17 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, StyleSheet, FlatList, DrawerLayoutAndroid, TouchableOpacity, SectionList } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, SectionList, FlatList, TouchableOpacity } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Maquinas from '../Components/Maquinas';
 import { useFocusEffect } from '@react-navigation/native';
+import Menu from './Menu'
 
 export default function Home() {
   const [maquinas, setMaquinas] = useState([]);
   const [error, setError] = useState(false);
   const [greeting, setGreeting] = useState('');
-  const drawer = useRef(null);
+  const [menu, setMenu] = useState(false);
 
+  // Função para buscar as máquinas
   async function getMaquinas() {
     try {
       const response = await fetch('http://10.139.75.75:5251/api/Maquina/GetAllMaquinas', {
@@ -25,11 +27,7 @@ export default function Home() {
     }
   }
 
-  useEffect(() => {
-    getMaquinas();
-    updateGreeting();
-  }, []);
-
+  // Atualiza o cumprimento conforme a hora do dia
   const updateGreeting = () => {
     const currentHour = new Date().getHours();
     if (currentHour < 12) {
@@ -41,12 +39,18 @@ export default function Home() {
     }
   };
 
+  useEffect(() => {
+    getMaquinas();
+    updateGreeting();
+  }, []);
+
   useFocusEffect(
     React.useCallback(() => {
       getMaquinas();
     }, [])
   );
 
+  // Função para agrupar máquinas por setor
   const groupBySetor = (maquinas) => {
     const setores = {};
     maquinas.forEach((maquina) => {
@@ -59,77 +63,54 @@ export default function Home() {
     return Object.keys(setores).map((setor) => ({ setor, data: setores[setor] }));
   };
 
-  const navigationView = () => (
-    <View style={styles.drawerContainer}>
-      <Text style={styles.drawerTitle}>GHMM</Text>
-      <TouchableOpacity style={styles.drawerItem}>
-        <MaterialCommunityIcons name="account" size={24} color="black" />
-        <Text style={styles.drawerText}>Perfil</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.drawerItem}>
-        <MaterialCommunityIcons name="wrench" size={24} color="black" />
-        <Text style={styles.drawerText}>Relatar Manutenção</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.drawerItem}>
-        <MaterialCommunityIcons name="history" size={24} color="black" />
-        <Text style={styles.drawerText}>Histórico de Manutenção</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.drawerItem}>
-        <MaterialCommunityIcons name="screwdriver" size={24} color="black" />
-        <Text style={styles.drawerText}>Relatar Peças</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.drawerItem}>
-        <MaterialCommunityIcons name="bell" size={24} color="black" />
-        <Text style={styles.drawerText}>Notificações</Text>
-      </TouchableOpacity>
-    </View>
-  );
+  if (menu === true) {
+    return(
+      <Menu handle={ setMenu }/>
+    )
+  }
+  function ExibirMenu() {
+    setMenu(true)
+  }
 
   return (
-    <DrawerLayoutAndroid
-      ref={drawer}
-      drawerWidth={300}
-      drawerPosition={'right'}
-      renderNavigationView={navigationView}>
-      <View style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.subHeader}>
-          <Text style={styles.greetingText}>{greeting}</Text>
-          <View style={styles.headerIcons}>
-            <MaterialCommunityIcons name="qrcode-scan" size={24} color="white" style={styles.iconSpacing} />
-            <TouchableOpacity onPress={() => drawer.current.openDrawer()}>
-              <MaterialCommunityIcons name="menu" size={24} color="white" style={styles.iconSpacing} />
-            </TouchableOpacity>
-          </View>
+        <Text style={styles.greetingText}>{greeting}</Text>
+        <View style={styles.headerIcons}>
+          <MaterialCommunityIcons name="qrcode-scan" size={24} color="white" style={styles.iconSpacing} />
+          <TouchableOpacity onPress={ExibirMenu}>
+            <MaterialCommunityIcons name="menu" size={24} color="white" style={styles.iconSpacing} />
+          </TouchableOpacity>
         </View>
-
-        {error ? (
-          <Text style={styles.errorText}>Erro ao carregar as máquinas!</Text>
-        ) : (
-          <SectionList
-            sections={groupBySetor(maquinas)}
-            keyExtractor={(item) => item.maquinaId.toString()}
-            renderSectionHeader={({ section: { setor } }) => (
-              <Text style={styles.setorHeader}>{setor}</Text>
-            )}
-            renderItem={({ section }) => (
-              <FlatList
-                data={section.data}  
-                horizontal={true}  
-                showsHorizontalScrollIndicator={false}
-                renderItem={({ item }) => (
-                  <Maquinas
-                    maquinaFoto={item.fotoUrl}
-                    maquinaModelo={item.modelo}
-                    maquinaNumeroSerie={item.numeroSerie}
-                  />
-                )}
-                keyExtractor={(item) => item.maquinaId.toString()}
-              />
-            )}
-          />
-        )}
       </View>
-    </DrawerLayoutAndroid>
+
+      {error ? (
+        <Text style={styles.errorText}>Erro ao carregar as máquinas!</Text>
+      ) : (
+        <SectionList
+          sections={groupBySetor(maquinas)}
+          keyExtractor={(item) => item.maquinaId.toString()}
+          renderSectionHeader={({ section: { setor } }) => (
+            <Text style={styles.setorHeader}>{setor}</Text>
+          )}
+          renderItem={({ section }) => (
+            <FlatList
+              data={section.data}
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+              renderItem={({ item }) => (
+                <Maquinas
+                  maquinaFoto={item.fotoUrl}
+                  maquinaModelo={item.modelo}
+                  maquinaNumeroSerie={item.numeroSerie}
+                />
+              )}
+              keyExtractor={(item) => item.maquinaId.toString()}
+            />
+          )}
+        />
+      )}
+    </View>
   );
 }
 
@@ -144,7 +125,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     marginBottom: 20,
-    marginTop: 30
+    marginTop: 30,
   },
   headerIcons: {
     flexDirection: 'row',
@@ -164,27 +145,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: 'red',
     marginTop: 20,
-  },
-  drawerContainer: {
-    flex: 1,
-    paddingTop: 20,
-    backgroundColor: '#FFF',
-  },
-  drawerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  drawerItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-  },
-  drawerText: {
-    fontSize: 18,
-    marginLeft: 15,
   },
   setorHeader: {
     fontSize: 22,

@@ -1,33 +1,145 @@
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const RegisterScreen = () => {
+export default function Cadastro() {
+  const [step, setStep] = useState(1);
+  const [nome, setNome] = useState('');
+  const [cpf, setCpf] = useState('');
+  const [email, setEmail] = useState('');
+  const [telefone, setTelefone] = useState('');
+  const [dataNascimento, setDataNascimento] = useState('');
+  const [escolaridade, setEscolaridade] = useState('');
+  const [urlFoto, setUrlFoto] = useState('');
+  const [senha, setSenha] = useState('');
+
+  const handleContinue = () => {
+    if (step < 3) setStep(step + 1);
+    else handleCadastro();
+  };
+
+  const handleBack = () => {
+    if (step > 1) setStep(step - 1);
+  };
+
+  const handleCadastro = () => {
+    const dados = {
+      nome, cpf, email, telefone, dataNascimento, escolaridade, urlFoto, senha
+    };
+    console.log('Dados enviados:', dados);
+    setNome("");
+    setCpf("");
+    setEmail("");
+    setTelefone("");
+    setDataNascimento("");
+    setEscolaridade("");
+    setUrlFoto("");
+    setSenha("");
+  };
+
   return (
     <View style={styles.container}>
-      <Image 
-        source={require("../../assets/backgroundLogin.png")}
-        style={styles.imagemFundo}
-      />
-      <ScrollView contentContainerStyle={styles.scrollContent}> 
-        <Image 
-          source={{ uri: 'https://cdn-icons-png.flaticon.com/512/149/149071.png' }} 
-          style={styles.avatar}
-        />
-        <TextInput style={styles.input} placeholder="Nome Completo" placeholderTextColor="#333" />
-        <TextInput style={styles.input} placeholder="CPF" placeholderTextColor="#333" />
-        <TextInput style={styles.input} placeholder="E-mail" placeholderTextColor="#333" />
-        <TextInput style={styles.input} placeholder="Telefone" placeholderTextColor="#333" />
-        <TextInput style={styles.input} placeholder="Data de nascimento" placeholderTextColor="#333" />
-        <TextInput style={styles.input} placeholder="Nível de escolaridade" placeholderTextColor="#333" />
-        <TextInput style={styles.input} placeholder="Cargo" placeholderTextColor="#333" />
-        <TextInput style={styles.input} placeholder="Setor" placeholderTextColor="#333" />
-        <TextInput style={styles.input} placeholder="Senha" placeholderTextColor="#333" secureTextEntry />
-        <TextInput style={styles.input} placeholder="Confirmar senha" placeholderTextColor="#333" secureTextEntry />
+      {step > 1 && (
+        <View style={styles.header}>
+        <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+        <MaterialCommunityIcons name="arrow-left" size={24} color="white" />
+      </TouchableOpacity>
+      <Text style={styles.title}>Crie uma nova conta</Text>
+      </View>
+      )}
 
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Cadastrar</Text>
-        </TouchableOpacity>
-      </ScrollView>
+      {step === 1 && (
+        <View>
+          <View style={styles.header}>
+        
+      <Text style={styles.TituloPagInicial}>Crie uma nova conta</Text>
+      </View>
+          <Text style={styles.label}>Nome</Text>
+          <TextInput 
+            value={nome} 
+            onChangeText={setNome} 
+            placeholder="Digite seu nome" 
+            style={styles.input} 
+          />
+          
+          <Text style={styles.label}>CPF</Text>
+          <TextInput 
+            value={cpf} 
+            onChangeText={setCpf} 
+            placeholder="Digite seu CPF" 
+            keyboardType="numeric" 
+            style={styles.input} 
+          />
+          
+          <Text style={styles.label}>Email</Text>
+          <TextInput 
+            value={email} 
+            onChangeText={setEmail} 
+            placeholder="Digite seu email" 
+            keyboardType="email-address" 
+            style={styles.input} 
+          />
+        </View>
+      )}
+
+      {step === 2 && (
+        <View>
+          <Text style={styles.label}>Telefone</Text>
+          <TextInput 
+            value={telefone} 
+            onChangeText={setTelefone} 
+            placeholder="Digite seu telefone" 
+            keyboardType="phone-pad" 
+            style={styles.input} 
+          />
+          
+          <Text style={styles.label}>Data de Nascimento</Text>
+          <TextInput 
+            value={dataNascimento} 
+            onChangeText={setDataNascimento} 
+            placeholder="Digite sua data de nascimento" 
+            style={styles.input} 
+          />
+          
+          <Text style={styles.label}>Escolaridade</Text>
+          <TextInput 
+            value={escolaridade} 
+            onChangeText={setEscolaridade} 
+            placeholder="Digite sua escolaridade" 
+            style={styles.input} 
+          />
+        </View>
+      )}
+
+      {step === 3 && (
+        <View>
+          <Text style={styles.label}>URL da Foto</Text>
+          <TextInput 
+            value={urlFoto} 
+            onChangeText={setUrlFoto} 
+            placeholder="Digite a URL da foto" 
+            style={styles.input} 
+          />
+          
+          <Text style={styles.label}>Senha</Text>
+          <TextInput 
+            value={senha} 
+            onChangeText={setSenha} 
+            placeholder="Digite sua senha" 
+            secureTextEntry 
+            style={styles.input} 
+          />
+        </View>
+      )}
+
+      <TouchableOpacity 
+        style={styles.button} 
+        onPress={handleContinue}
+      >
+        <Text style={styles.buttonText}>
+          {step < 3 ? 'Continuar                                                                 >' : 'Cadastrar'}
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -35,61 +147,62 @@ const RegisterScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5', 
+    backgroundColor: '#1E1E1E',
+    padding: 20,
   },
-  imagemFundo: {
-    ...StyleSheet.absoluteFillObject, 
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover', 
+  header: {
+    marginTop: 30,
+    textAlign: 'center',
   },
-  scrollContent: {
-    alignItems: 'center',
-    paddingVertical: 20,
+  title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: 'white',
+    marginBottom: 40,
+    textAlign: 'center',
+    marginTop: 40
   },
-  avatar: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    marginTop: 20,
+  TituloPagInicial: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: 'white',
+    marginBottom: 40,
+    textAlign: 'center',
+    marginTop: 85
+  },
+  backButton: {
+    alignSelf: 'flex-start',
     marginBottom: 20,
-    borderWidth: 2,
-    borderColor: '#007BFF', 
+  },
+  label: {
+    fontSize: 16,
+    marginBottom: 8,
+    color: '#FFFF',
   },
   input: {
-    width: '85%',
-    height: 50,
-    backgroundColor: '#E8E8E8', 
-    borderRadius: 10,
-    paddingHorizontal: 15,
+    borderWidth: 1,
+    borderColor: '#DDD',
+    borderRadius: 15,
+    padding: 10,  
+    marginBottom: 20,
     fontSize: 16,
-    marginBottom: 15,
-    color: '#000', 
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2, 
-    elevation: 3, 
+    backgroundColor: '#F7F7F7',
+    height: 70
   },
   button: {
-    width: '85%',
-    height: 50,
-    backgroundColor: '#007BFF', 
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: '#696767',
+    padding: 15,
     borderRadius: 10,
-    marginTop: 30,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 10,
+    height: 70
   },
   buttonText: {
-    color: '#fff',
-    fontSize: 18,
+    color: '#FFF',
+    fontSize: 16,
     fontWeight: 'bold',
   },
 });
 
-export default RegisterScreen;
+
