@@ -6,6 +6,8 @@ import HomeUsuario from '../Pages/HomeUsuario';
 import LoginScreen from '../Pages/Login';
 import CadastroScreen from '../Pages/Cadastro';
 import CadastroMaquina from '../Pages/CadastroMaquina';
+import TelaAgradecimento from '../Components/TelaAgradecimentoCadastro';
+import Busca from '../Pages/Busca'
 
 const Tab = createBottomTabNavigator();
 
@@ -34,6 +36,15 @@ export default function Rotas() {
                     }}
                 />
                 <Tab.Screen
+                    name="Buscar"
+                    component={Busca}
+                    options={{
+                        tabBarIcon: ({ color, size }) => (
+                            <MaterialCommunityIcons name="home" color={color} size={size} />
+                        ),
+                    }}
+                />
+                <Tab.Screen
                     name="Login"
                     component={LoginScreen}
                     options={{
@@ -42,6 +53,7 @@ export default function Rotas() {
                         ),
                     }}
                 />
+                
                 <Tab.Screen
                     name="Cadastro"
                     component={CadastroScreen}
@@ -54,6 +66,15 @@ export default function Rotas() {
                 <Tab.Screen
                     name="CadastroMaquina"
                     component={CadastroMaquina}
+                    options={{
+                        tabBarIcon: ({ color, size }) => (
+                            <MaterialCommunityIcons name="plus" color={color} size={size} />
+                        ),
+                    }}
+                />
+                <Tab.Screen
+                    name="TelaAgrad"
+                    component={TelaAgradecimento}
                     options={{
                         tabBarIcon: ({ color, size }) => (
                             <MaterialCommunityIcons name="plus" color={color} size={size} />

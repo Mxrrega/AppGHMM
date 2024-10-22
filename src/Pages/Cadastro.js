@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import TelaAgradecimento from '../Components/TelaAgradecimentoCadastro';
+import Icon from 'react-native-vector-icons/Ionicons'; 
 
 export default function Cadastro() {
   const [step, setStep] = useState(1);
@@ -12,6 +14,8 @@ export default function Cadastro() {
   const [escolaridade, setEscolaridade] = useState('');
   const [urlFoto, setUrlFoto] = useState('');
   const [senha, setSenha] = useState('');
+  const [agradecimento, setAgradecimento] = useState(false);
+  const [Versenha, setVersenha] = useState(false);
 
   const handleContinue = () => {
     if (step < 3) setStep(step + 1);
@@ -22,7 +26,12 @@ export default function Cadastro() {
     if (step > 1) setStep(step - 1);
   };
 
-  const handleCadastro = () => {
+  if (agradecimento === true) {
+    return(
+      <TelaAgradecimento handle={ setAgradecimento }/>
+    )
+  }
+  function ExibirAgradecimento() {
     const dados = {
       nome, cpf, email, telefone, dataNascimento, escolaridade, urlFoto, senha
     };
@@ -35,10 +44,15 @@ export default function Cadastro() {
     setEscolaridade("");
     setUrlFoto("");
     setSenha("");
+    setAgradecimento(true)
+  }
+
+  const VerSenha = () => {
+    setVersenha(!Versenha);
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       {step > 1 && (
         <View style={styles.header}>
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
@@ -122,25 +136,51 @@ export default function Cadastro() {
           />
           
           <Text style={styles.label}>Senha</Text>
+
+          <View style={styles.campoSenha}>
           <TextInput 
             value={senha} 
             onChangeText={setSenha} 
             placeholder="Digite sua senha" 
-            secureTextEntry 
-            style={styles.input} 
+            secureTextEntry={!Versenha}
+            style={styles.senha}
           />
+          <TouchableOpacity onPress={VerSenha}>
+              <Icon
+                name={Versenha ? 'eye-off' : 'eye'}
+                size={24}
+              />
+            </TouchableOpacity>
+          </View>
+          
+          
         </View>
       )}
-
+      {step < 3 && (
       <TouchableOpacity 
         style={styles.button} 
         onPress={handleContinue}
       >
+        <View style={styles.continueView}>
         <Text style={styles.buttonText}>
-          {step < 3 ? 'Continuar                                                                 >' : 'Cadastrar'}
+          Continuar                                                       
+        </Text>
+        <MaterialCommunityIcons name="chevron-right" size={24} color="white" />
+        </View>
+      </TouchableOpacity>
+      )}
+
+{step === 3 && (
+      <TouchableOpacity 
+        style={styles.buttonCadastro} 
+        onPress={ExibirAgradecimento}
+      >
+        <Text style={styles.buttonText}>
+          Cadastrar                                                                
         </Text>
       </TouchableOpacity>
-    </View>
+      )}
+    </ScrollView>
   );
 };
 
@@ -193,15 +233,46 @@ const styles = StyleSheet.create({
     backgroundColor: '#696767',
     padding: 15,
     borderRadius: 10,
-    alignItems: 'center',
     justifyContent: 'center',
     marginTop: 10,
+    marginBottom: 10,
     height: 70
   },
   buttonText: {
     color: '#FFF',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  continueView: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  buttonCadastro: {
+    backgroundColor: '#696767',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 10,
+    marginBottom: 10,
+    height: 70
+  },
+  campoSenha: {
+    borderWidth: 1,
+    borderColor: '#DDD',
+    borderRadius: 15,
+    padding: 10,  
+    marginBottom: 20,
+    backgroundColor: '#F7F7F7',
+    height: 70,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  senha: {
+    fontSize: 16,
   },
 });
 

@@ -11,10 +11,10 @@ export default function Home() {
   const [greeting, setGreeting] = useState('');
   const [menu, setMenu] = useState(false);
 
-  // Função para buscar as máquinas
+
   async function getMaquinas() {
     try {
-      const response = await fetch('http://10.139.75.75:5251/api/Maquina/GetAllMaquinas', {
+      const response = await fetch('http://10.139.75.33/api/Maquina/GetAllMaquinas', {
         method: 'GET',
         headers: {
           'content-type': 'application/json'
@@ -27,7 +27,6 @@ export default function Home() {
     }
   }
 
-  // Atualiza o cumprimento conforme a hora do dia
   const updateGreeting = () => {
     const currentHour = new Date().getHours();
     if (currentHour < 12) {
@@ -50,7 +49,7 @@ export default function Home() {
     }, [])
   );
 
-  // Função para agrupar máquinas por setor
+
   const groupBySetor = (maquinas) => {
     const setores = {};
     maquinas.forEach((maquina) => {

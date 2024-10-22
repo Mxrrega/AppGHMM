@@ -1,8 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import CadastroMaquina from './CadastroMaquina';
 
 export default function Configuracoes({handle}) {
+
+  const [cadastromaquina, setCadastroMaquina] = useState(false);
+
+  if (cadastromaquina === true) {
+    return(
+      <CadastroMaquina handle={ setCadastroMaquina }/>
+    )
+  }
+  function ExibirCadastroMaquina() {
+    setCadastroMaquina(true)
+  }
+
   return (
     <View style={styles.container}>
         <View style={styles.header}>
@@ -23,12 +36,27 @@ export default function Configuracoes({handle}) {
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.menuItem}>
-        <Text style={styles.menuText}>Armazenamento</Text>
+        <Text style={styles.menuText}>Histórico</Text>
         <MaterialCommunityIcons name="chevron-right" size={24} color="white" />
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.menuItem}>
-        <Text style={styles.menuText}>Sobre</Text>
+        <Text style={styles.menuText}>Registro de Manutenção</Text>
+        <MaterialCommunityIcons name="chevron-right" size={24} color="white" />
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.menuItem}>
+        <Text style={styles.menuText}>Inventário de Peças</Text>
+        <MaterialCommunityIcons name="chevron-right" size={24} color="white" />
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.menuItem}>
+        <Text style={styles.menuText}>Relatório do Funcionário</Text>
+        <MaterialCommunityIcons name="chevron-right" size={24} color="white" />
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={ExibirCadastroMaquina} style={styles.menuItem}>
+        <Text style={styles.menuText}>Cadastro de Máquinas</Text>
         <MaterialCommunityIcons name="chevron-right" size={24} color="white" />
       </TouchableOpacity>
     </View>
@@ -59,11 +87,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#333',
+    marginBottom: 20
   },
   menuText: {
     fontSize: 18,
     color: 'white',
+    fontWeight: '500',
   },
 });

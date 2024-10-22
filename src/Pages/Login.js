@@ -1,132 +1,136 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons'; 
 
-export default function TelaLogin() {
+export default function Login() {
 
   const [cpf, setCpf] = useState('');
-  const [password, setPassword] = useState('');
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [senha, setSenha] = useState('');
+  const [Versenha, setVersenha] = useState(false);
 
-  const handleLogin = () => {
-    Alert.alert('Login', `CPF: ${cpf}\nSenha: ${password}`);
+  const VerSenha = () => {
+    setVersenha(!Versenha);
   };
-
-  const togglePasswordVisibility = () => {
-    setIsPasswordVisible(!isPasswordVisible);
-  };
-
+ 
   return (
-    <View style={styles.container}>
-      <Image 
-        source={require("../../assets/backgroundLogin.png")}
-        style={styles.imagemFundo}
-      />
-      <ScrollView contentContainerStyle={styles.scrollContent}> 
-      <Image 
-          source={{ uri: 'https://cdn-icons-png.flaticon.com/512/149/149071.png' }} 
-          style={styles.avatar}
-        />
-          <TextInput
-            style={styles.input}
-            placeholder="CPF"
-            keyboardType="numeric"
-            value={cpf}
-            onChangeText={setCpf}
+    <ScrollView style={styles.container}>
+        <View>
+          <View style={styles.header}>
+      <Text style={styles.TituloPagInicial}>Seja Bem Vindo!</Text>
+      </View>
+          <Text style={styles.label}>CPF</Text>
+          <TextInput 
+            value={cpf} 
+            onChangeText={setCpf} 
+            placeholder="Digite seu CPF" 
+            keyboardType="numeric" 
+            style={styles.input} 
           />
-            <TextInput
-            style={styles.input}
-              placeholder="Senha"
-              secureTextEntry={!isPasswordVisible}
-              value={password}
-              onChangeText={setPassword}
-            />
-            <TouchableOpacity onPress={togglePasswordVisibility} style={styles.botao}>
+          
+          <Text style={styles.label}>Senha</Text>
+
+          <View style={styles.campoSenha}>
+          <TextInput 
+            value={senha} 
+            onChangeText={setSenha} 
+            placeholder="Digite sua senha" 
+            secureTextEntry={!Versenha}
+            style={styles.senha}
+          />
+          <TouchableOpacity onPress={VerSenha}>
               <Icon
-                name={isPasswordVisible ? 'eye-off' : 'eye'}
+                name={Versenha ? 'eye-off' : 'eye'}
                 size={24}
               />
             </TouchableOpacity>
-          <TouchableOpacity onPress={() => Alert.alert('Recuperação de Senha')}>
-            <Text style={styles.forgotPasswordText}>Esqueceu a senha?</Text>
-          </TouchableOpacity>
-
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Entrar</Text>
-        </TouchableOpacity>
-      </ScrollView>
-    </View>
+          </View>
+        </View>
+      <TouchableOpacity 
+        style={styles.button} 
+      >
+        <Text style={styles.buttonText}>
+          Login                                                                
+        </Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'black',
+    backgroundColor: '#1E1E1E',
+    padding: 20,
   },
-  imagemFundo: {
-    ...StyleSheet.absoluteFillObject, 
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover', 
+  header: {
+    marginTop: 30,
+    textAlign: 'center',
   },
-  scrollContent: {
-    alignItems: 'center',
-    paddingVertical: 20,
-  },
-  avatar: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    marginTop: 20,
-    marginBottom: 20,
-    borderWidth: 2,
-    borderColor: '#007BFF', 
-  },
-  
-  input: {
-    width: '85%',
-    height: 50,
-    backgroundColor: '#E8E8E8', 
-    borderRadius: 10,
-    paddingHorizontal: 15,
-    fontSize: 16,
-    marginBottom: 15,
-    color: '#000', 
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2, 
-    elevation: 3, 
-  },
-  botao: {
-    marginBottom: 50,
-    marginTop: -50,
-    marginLeft: 290
-  },
-  forgotPasswordText: {
+  title: {
+    fontSize: 32,
+    fontWeight: 'bold',
     color: 'white',
-    textAlign: 'right',
-    marginTop: 10,
+    marginBottom: 40,
+    textAlign: 'center',
+    marginTop: 40
+  },
+  TituloPagInicial: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: 'white',
+    marginBottom: 40,
+    textAlign: 'center',
+    marginTop: 85
+  },
+  backButton: {
+    alignSelf: 'flex-start',
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 16,
+    marginBottom: 8,
+    color: '#FFFF',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#DDD',
+    borderRadius: 15,
+    padding: 10,  
+    marginBottom: 20,
+    fontSize: 16,
+    backgroundColor: '#F7F7F7',
+    height: 70
   },
   button: {
-    width: '85%',
-    height: 50,
-    backgroundColor: '#007BFF', 
+    backgroundColor: '#696767',
+    padding: 15,
+    borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 10,
-    marginTop: 30,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 5,
+    marginTop: 10,
+    marginBottom: 10,
+    height: 70
   },
   buttonText: {
-    color: '#fff',
-    fontSize: 18,
+    color: '#FFF',
+    fontSize: 16,
     fontWeight: 'bold',
   },
+  campoSenha: {
+    borderWidth: 1,
+    borderColor: '#DDD',
+    borderRadius: 15,
+    padding: 10,  
+    marginBottom: 20,
+    backgroundColor: '#F7F7F7',
+    height: 70,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  senha: {
+    fontSize: 16,
+  },
 });
+
 
