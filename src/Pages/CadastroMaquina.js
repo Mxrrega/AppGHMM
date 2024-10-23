@@ -48,8 +48,7 @@ export default function CadastroMaquina({ handle }) {
   }, []);
 
   const handleContinue = () => {
-    if (step < 3) setStep(step + 1);
-    else handleCadastro();
+    if (step < 4) setStep(step + 1);
   };
 
   const handleBack = () => {
@@ -75,30 +74,14 @@ export default function CadastroMaquina({ handle }) {
       voltagem,
       detalhes
     };
-
-    try {
-      const response = await fetch('http://10.139.75.18:5251/api/Maquina/CreateMaquina', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(maquina),
-      });
-
-      if (response.ok) {
-        Alert.alert('Sucesso', 'Máquina cadastrada com sucesso!');
-      } else {
-        Alert.alert('Erro', 'Erro ao cadastrar a máquina. Código de status: ' + response.status);
-      }
-    } catch (error) {
-      console.error('Erro ao cadastrar a máquina:', error);
-      Alert.alert('Erro', 'Erro ao cadastrar a máquina. Verifique a conexão.');
-    }
+    handleContinue()
+    
+    
   }
 
   return (
     <ScrollView style={styles.container}>
-      {step > 1 && (
+      {step > 1 && step < 4 && (
         <View style={styles.header}>
           <TouchableOpacity onPress={handleBack} style={styles.backButton}>
             <MaterialCommunityIcons name="arrow-left" size={24} color="white" />
@@ -230,6 +213,22 @@ export default function CadastroMaquina({ handle }) {
           />
         </View>
       )}
+
+{step === 4 && ( 
+  <View style={styles.container}>
+  <View style={styles.header}>
+<Text style={styles.title}>Obrigado por cradastrar uma Máquina!</Text>
+</View>
+<TouchableOpacity 
+  style={styles.buttonCadastro} 
+  onPress={() => handle(false)}
+>
+  <Text style={styles.buttonText}>
+    Continuar
+  </Text>
+</TouchableOpacity>
+</View>
+)}
 
       {step < 3 && (
         <TouchableOpacity style={styles.button} onPress={handleContinue}>

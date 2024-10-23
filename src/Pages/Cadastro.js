@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import TelaAgradecimento from '../Components/TelaAgradecimentoCadastro';
 import Icon from 'react-native-vector-icons/Ionicons'; 
 
-export default function Cadastro() {
+export default function Cadastro({handle}) {
   const [step, setStep] = useState(1);
   const [nome, setNome] = useState('');
   const [cpf, setCpf] = useState('');
@@ -18,19 +17,13 @@ export default function Cadastro() {
   const [Versenha, setVersenha] = useState(false);
 
   const handleContinue = () => {
-    if (step < 3) setStep(step + 1);
-    else handleCadastro();
+    if (step < 4) setStep(step + 1);
   };
 
   const handleBack = () => {
     if (step > 1) setStep(step - 1);
   };
 
-  if (agradecimento === true) {
-    return(
-      <TelaAgradecimento handle={ setAgradecimento }/>
-    )
-  }
   function ExibirAgradecimento() {
     const dados = {
       nome, cpf, email, telefone, dataNascimento, escolaridade, urlFoto, senha
@@ -45,6 +38,8 @@ export default function Cadastro() {
     setUrlFoto("");
     setSenha("");
     setAgradecimento(true)
+
+    handleContinue()
   }
 
   const VerSenha = () => {
@@ -53,7 +48,7 @@ export default function Cadastro() {
 
   return (
     <ScrollView style={styles.container}>
-      {step > 1 && (
+      {step > 1 && step < 4 && (
         <View style={styles.header}>
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
         <MaterialCommunityIcons name="arrow-left" size={24} color="white" />
@@ -180,6 +175,21 @@ export default function Cadastro() {
         </Text>
       </TouchableOpacity>
       )}
+      {step === 4 && ( 
+  <View style={styles.container}>
+  <View style={styles.header}>
+<Text style={styles.title}>Obrigado por criar sua conta!</Text>
+</View>
+<TouchableOpacity 
+  style={styles.buttonCadastro} 
+  onPress={() => handle(false)}
+>
+  <Text style={styles.buttonText}>
+    Continuar
+  </Text>
+</TouchableOpacity>
+</View>
+)}
     </ScrollView>
   );
 };

@@ -1,16 +1,27 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons'; 
+import Cadastro from './Cadastro'
 
 export default function Login() {
 
   const [cpf, setCpf] = useState('');
   const [senha, setSenha] = useState('');
   const [Versenha, setVersenha] = useState(false);
+  const [cadastro, setCadastro] = useState(false);
 
   const VerSenha = () => {
     setVersenha(!Versenha);
   };
+
+  if (cadastro === true) {
+    return(
+      <Cadastro handle={ setCadastro }/>
+    )
+  }
+  function ExibirCadastro() {
+    setCadastro(true)
+  }
  
   return (
     <ScrollView style={styles.container}>
@@ -37,6 +48,7 @@ export default function Login() {
             secureTextEntry={!Versenha}
             style={styles.senha}
           />
+
           <TouchableOpacity onPress={VerSenha}>
               <Icon
                 name={Versenha ? 'eye-off' : 'eye'}
@@ -45,6 +57,10 @@ export default function Login() {
             </TouchableOpacity>
           </View>
         </View>
+        <TouchableOpacity onPress={ExibirCadastro}>
+        <Text style={styles.cadastro}>Cadastre-se</Text>
+        </TouchableOpacity>
+        
       <TouchableOpacity 
         style={styles.button} 
       >
@@ -130,6 +146,12 @@ const styles = StyleSheet.create({
   },
   senha: {
     fontSize: 16,
+  },
+  cadastro: {
+    fontSize: 16,
+    marginBottom: 8,
+    color: '#C9C9C9',
+    fontWeight: '700'
   },
 });
 
