@@ -2,7 +2,6 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert 
 import React, { useState, useEffect } from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
-import RNPickerSelect from 'react-native-picker-select';
 
 export default function CadastroMaquina({ handle }) {
 
@@ -74,9 +73,26 @@ export default function CadastroMaquina({ handle }) {
       voltagem,
       detalhes
     };
-    handleContinue()
-    
-    
+
+    console.log('Máquina a ser cadastrada:', maquina); 
+    try {
+      const response = await fetch('http://10.139.75.33/api/Maquina/CreateMaquina', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(maquina),
+      });
+      if (response.ok) {
+        Alert.alert('Sucesso', 'Máquina cadastrada com sucesso!');
+        navigation.goBack();
+      } else {
+        Alert.alert('Erro', 'Erro ao cadastrar a máquina. Código de status: ' + response.status);
+      }
+    } catch (error) {
+      console.error('Erro ao cadastrar a máquina:', error);
+      Alert.alert('Erro', 'Erro ao cadastrar a máquina. Verifique a conexão.');
+    }
   }
 
   return (
@@ -173,44 +189,33 @@ export default function CadastroMaquina({ handle }) {
 
       {step === 3 && (
         <View>
-          <Text style={styles.label}>Tipo da Máquina</Text>
-          <RNPickerSelect
-            onValueChange={(itemValue) => setTipoMaquinaId(itemValue)}
-            items={tiposMaquina.map((tipo) => ({
-              label: tipo.nome,
-              value: tipo.id
-            }))}
-            placeholder={{
-              label: 'Selecione o tipo da máquina',
-              value: null
-            }}
+          <Text style={styles.label}>Tipo da Maquina</Text>
+          <TextInput
+            value={tipoMaquinaId}
+            onChangeText={setTipoMaquinaId}
+            placeholder="Digite o id do tipo"
+            keyboardType='default'
+            style={styles.input}
           />
 
-<Text style={styles.label}>Setor</Text>
-          <RNPickerSelect
-            onValueChange={(itemValue) => setSetorId(itemValue)}
-            items={setores.map((setor) => ({
-              label: setor.nome,
-              value: setor.id
-            }))}
-            placeholder={{
-              label: 'Selecione o setor',
-              value: null
-            }}
+<Text style={styles.label}>Setor da Maquina</Text>
+          <TextInput
+            value={setorId}
+            onChangeText={setSetorId}
+            placeholder="Digite o id do tipo"
+            keyboardType='default'
+            style={styles.input}
           />
 
-<Text style={styles.label}>Fabricante</Text>
-          <RNPickerSelect
-            onValueChange={(itemValue) => setFabricanteId(itemValue)}
-            items={fabricantes.map((fabricante) => ({
-              label: fabricante.nome,
-              value: fabricante.id
-            }))}
-            placeholder={{
-              label: 'Selecione o fabricante',
-              value: null
-            }}
+<Text style={styles.label}>Fabricante da Maquina</Text>
+          <TextInput
+            value={fabricanteId}
+            onChangeText={setFabricanteId}
+            placeholder="Digite o id do tipo"
+            keyboardType='default'
+            style={styles.input}
           />
+         
         </View>
       )}
 
