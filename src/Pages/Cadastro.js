@@ -60,8 +60,10 @@ export default function Cadastro({handle}) {
       {step === 1 && (
         <View>
           <View style={styles.header}>
-        
-      <Text style={styles.TituloPagInicial}>Crie uma nova conta</Text>
+        <TouchableOpacity onPress={() => handle(false)}  style={styles.backButton}>
+        <MaterialCommunityIcons name="arrow-left" size={24} color="white" />
+      </TouchableOpacity>
+      <Text style={styles.title}>Crie uma nova conta</Text>
       </View>
           <Text style={styles.label}>Nome</Text>
           <TextInput 

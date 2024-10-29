@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons'; 
+import Icon from 'react-native-vector-icons/Ionicons';
+import { AuthContext } from '../Context/AuthContext';
 import Cadastro from './Cadastro'
 
 export default function Login() {
@@ -10,64 +11,75 @@ export default function Login() {
   const [Versenha, setVersenha] = useState(false);
   const [cadastro, setCadastro] = useState(false);
 
+  const { Login, error } = useContext(AuthContext);
+
+  function RealizaLogin() {
+    Login(cpf, senha);
+  }
+
   const VerSenha = () => {
     setVersenha(!Versenha);
   };
 
   if (cadastro === true) {
-    return(
-      <Cadastro handle={ setCadastro }/>
+    return (
+      <Cadastro handle={setCadastro} />
     )
   }
   function ExibirCadastro() {
     setCadastro(true)
   }
- 
+
   return (
     <ScrollView style={styles.container}>
-        <View>
-          <View style={styles.header}>
-      <Text style={styles.TituloPagInicial}>Seja Bem Vindo!</Text>
-      </View>
-          <Text style={styles.label}>CPF</Text>
-          <TextInput 
-            value={cpf} 
-            onChangeText={setCpf} 
-            placeholder="Digite seu CPF" 
-            keyboardType="numeric" 
-            style={styles.input} 
-          />
-          
-          <Text style={styles.label}>Senha</Text>
+      <View>
+        <View style={styles.header}>
+          <Text style={styles.TituloPagInicial}>Seja Bem Vindo!</Text>
+        </View>
+        <Text style={styles.label}>CPF</Text>
+        <TextInput
+          value={cpf}
+          onChangeText={setCpf}
+          placeholder="Digite seu CPF"
+          keyboardType="numeric"
+          style={styles.input}
+        />
 
-          <View style={styles.campoSenha}>
-          <TextInput 
-            value={senha} 
-            onChangeText={setSenha} 
-            placeholder="Digite sua senha" 
+        <Text style={styles.label}>Senha</Text>
+
+        <View style={styles.campoSenha}>
+          <TextInput
+            value={senha}
+            onChangeText={setSenha}
+            placeholder="Digite sua senha"
             secureTextEntry={!Versenha}
             style={styles.senha}
           />
 
           <TouchableOpacity onPress={VerSenha}>
-              <Icon
-                name={Versenha ? 'eye-off' : 'eye'}
-                size={24}
-              />
-            </TouchableOpacity>
-          </View>
+            <Icon
+              name={Versenha ? 'eye-off' : 'eye'}
+              size={24}
+            />
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity onPress={ExibirCadastro}>
+      </View>
+      <TouchableOpacity onPress={ExibirCadastro}>
         <Text style={styles.cadastro}>Cadastre-se</Text>
-        </TouchableOpacity>
-        
-      <TouchableOpacity 
-        style={styles.button} 
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.button}
       >
-        <Text style={styles.buttonText}>
-          Login                                                                
+        <Text style={styles.buttonText} onPress={RealizaLogin}>
+          Login
         </Text>
       </TouchableOpacity>
+      {error &&
+        <View style={styles.header}>
+          <Text style={styles.errorText}>Revise os campos. Tente novamente!</Text>
+        </View>
+      }
     </ScrollView>
   );
 };
@@ -111,7 +123,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#DDD',
     borderRadius: 15,
-    padding: 10,  
+    padding: 10,
     marginBottom: 20,
     fontSize: 16,
     backgroundColor: '#F7F7F7',
@@ -136,7 +148,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#DDD',
     borderRadius: 15,
-    padding: 10,  
+    padding: 10,
     marginBottom: 20,
     backgroundColor: '#F7F7F7',
     height: 70,
@@ -152,6 +164,9 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     color: '#C9C9C9',
     fontWeight: '700'
+  },
+  errorText: {
+    color: '#ffff'
   },
 });
 

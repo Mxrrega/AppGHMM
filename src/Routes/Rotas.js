@@ -2,16 +2,23 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
+import { useContext } from 'react';
+import { AuthContext } from '../Context/AuthContext';
 import HomeUsuario from '../Pages/HomeUsuario';
 import LoginScreen from '../Pages/Login';
-import CadastroScreen from '../Pages/Cadastro';
 import CadastroMaquina from '../Pages/CadastroMaquina';
 import Busca from '../Pages/Busca'
+import Login from '../Pages/Login';
 
 const Tab = createBottomTabNavigator();
 
 export default function Rotas() {
 
+    const { logado } = useContext(AuthContext);
+
+    if (!logado) {
+        return (<Login />)
+    }
     return (
         <NavigationContainer>
             <Tab.Navigator

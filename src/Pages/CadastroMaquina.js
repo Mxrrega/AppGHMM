@@ -1,6 +1,9 @@
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
 import React, { useState, useEffect } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import SelectDropdown from 'react-native-select-dropdown'
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
 
 export default function CadastroMaquina({ handle }) {
@@ -21,30 +24,50 @@ export default function CadastroMaquina({ handle }) {
   const [tiposMaquina, setTiposMaquina] = useState([]);
   const [setores, setSetores] = useState([]);
   const [fabricantes, setFabricantes] = useState([]);
+  const [sucesso, setSucesso] = useState(false);
+
+  async function carregarDados() {
+    await fetch(process.env.EXPO_PUBLIC_URL + '/api/TipoMaquina/GetAllTipoMaquinas', {
+      method: 'GET',
+      headers: {
+        'content-type': 'application/json',
+      },
+    })
+      .then(res => res.json())
+      .then(json => setTiposMaquina(json))
+      .catch(err => console.error('Erro ao carregar tipos de máquinas:', err));
+
+    await fetch(process.env.EXPO_PUBLIC_URL + '/api/Setor/GetAllSetores', {
+      method: 'GET',
+      headers: {
+        'content-type': 'application/json',
+      },
+    })
+      .then(res => res.json())
+      .then(json => setSetores(json))
+      .catch(err => console.error('Erro ao carregar setores:', err));
+
+    await fetch(process.env.EXPO_PUBLIC_URL + '/api/Fabricante/GetAllFabricantes', {
+      method: 'GET',
+      headers: {
+        'content-type': 'application/json',
+      },
+    })
+      .then(res => res.json())
+      .then(json => setFabricantes(json))
+      .catch(err => console.error('Erro ao carregar fabricantes:', err));
+  }
 
   useEffect(() => {
-
-    async function carregarDados() {
-      try {
-
-        const responseTipos = await fetch('http://10.139.75.33/api/TipoMaquina/GetAllTipoMaquinas');
-        const tipos = await responseTipos.json();
-        setTiposMaquina(tipos);
-
-        const responseSetores = await fetch('http://10.139.75.33/api/Setor/GetAllSetores');
-        const setores = await responseSetores.json();
-        setSetores(setores);
-
-        const responseFabricantes = await fetch('http://10.139.75.33/api/Fabricante/GetAllFabricantes');
-        const fabricantes = await responseFabricantes.json();
-        setFabricantes(fabricantes);
-      } catch (error) {
-        Alert.alert('Erro', 'Erro ao carregar os dados do banco.');
-      }
-    }
-
     carregarDados();
   }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+        
+        carregarDados();
+    }, [])
+);
 
   const handleContinue = () => {
     if (step < 4) setStep(step + 1);
@@ -53,6 +76,10 @@ export default function CadastroMaquina({ handle }) {
   const handleBack = () => {
     if (step > 1) setStep(step - 1);
   };
+
+  if (sucesso === true ) {
+    handleContinue();
+  }
 
   async function cadastrarMaquina() {
     if (!moment(dataAquisicao, 'DD/MM/YYYY', true).isValid()) {
@@ -74,25 +101,34 @@ export default function CadastroMaquina({ handle }) {
       detalhes
     };
 
-    console.log('Máquina a ser cadastrada:', maquina); 
-    try {
-      const response = await fetch('http://10.139.75.33/api/Maquina/CreateMaquina', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(maquina),
-      });
-      if (response.ok) {
-        Alert.alert('Sucesso', 'Máquina cadastrada com sucesso!');
-        navigation.goBack();
-      } else {
-        Alert.alert('Erro', 'Erro ao cadastrar a máquina. Código de status: ' + response.status);
-      }
-    } catch (error) {
-      console.error('Erro ao cadastrar a máquina:', error);
-      Alert.alert('Erro', 'Erro ao cadastrar a máquina. Verifique a conexão.');
-    }
+    console.log('Máquina a ser cadastrada:', maquina);
+
+    await fetch(process.env.EXPO_PUBLIC_URL + '/api/Maquina/CreateMaquina', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify(
+        {
+          nome: nomeMaquina,
+          modelo: modelo,
+          numeroSerie: numeroSerie,
+          dataAquisicao :  moment(dataAquisicao, 'DD/MM/YYYY').format('YYYY-MM-DD') ,
+          fotoUrl: fotoUrl,
+          peso: peso,
+          voltagem: voltagem,
+          maquinaDetalhes: detalhes,
+          tipoMaquinaId: tipoMaquinaId,
+          setorId: setorId,
+          fabricanteId: fabricanteId
+        }
+      )
+    })
+      .then(res => res.json())
+      .then(json => console.log(json))
+      .catch(err => console.error('Erro ao cadastrar a máquina. Código de status:', err));
+      setSucesso(true)
+
   }
 
   return (
@@ -190,50 +226,104 @@ export default function CadastroMaquina({ handle }) {
       {step === 3 && (
         <View>
           <Text style={styles.label}>Tipo da Maquina</Text>
-          <TextInput
-            value={tipoMaquinaId}
-            onChangeText={setTipoMaquinaId}
-            placeholder="Digite o id do tipo"
-            keyboardType='default'
-            style={styles.input}
+          <SelectDropdown
+            data={tiposMaquina}
+            onSelect={(selectedItem) => {
+              setTipoMaquinaId(selectedItem.tipoMaquinaId);
+            }}
+            renderButton={(selectedItem, isOpened) => {
+              return (
+                <View style={styles.inputSelect}>
+                  <Text style={styles.dropdownButtonTxtStyle}>
+                    {(selectedItem && selectedItem.tipoMaquinaNome) || 'Selecione o tipo de Máquina'}
+                  </Text>
+                  <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+                </View>
+              );
+            }}
+            renderItem={(item,  isSelected) => {
+              return (
+                <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                  <Text style={styles.dropdownItemTxtStyle}>{item.tipoMaquinaNome}</Text>
+                </View>
+              );
+            }}
+            showsVerticalScrollIndicator={false}
+            dropdownStyle={styles.dropdownMenuStyle}
           />
 
-<Text style={styles.label}>Setor da Maquina</Text>
-          <TextInput
-            value={setorId}
-            onChangeText={setSetorId}
-            placeholder="Digite o id do tipo"
-            keyboardType='default'
-            style={styles.input}
+          <Text style={styles.label}>Setor da Maquina</Text>
+          <SelectDropdown
+            data={setores}
+            onSelect={(selectedItem) => {
+              setSetorId(selectedItem.setorId);
+            }}
+            renderButton={(selectedItem, isOpened) => {
+              return (
+                <View style={styles.inputSelect}>
+                  <Text style={styles.dropdownButtonTxtStyle}>
+                    {(selectedItem && selectedItem.setorNome) || 'Selecione o setor da Máquina'}
+                  </Text>
+                  <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+                </View>
+              );
+            }}
+            renderItem={(item,  isSelected) => {
+              return (
+                <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                  <Text style={styles.dropdownItemTxtStyle}>{item.setorNome}</Text>
+                </View>
+              );
+            }}
+            showsVerticalScrollIndicator={false}
+            dropdownStyle={styles.dropdownMenuStyle}
           />
 
-<Text style={styles.label}>Fabricante da Maquina</Text>
-          <TextInput
-            value={fabricanteId}
-            onChangeText={setFabricanteId}
-            placeholder="Digite o id do tipo"
-            keyboardType='default'
-            style={styles.input}
+          <Text style={styles.label}>Fabricante da Maquina</Text>
+          <SelectDropdown
+            data={fabricantes}
+            onSelect={(selectedItem) => {
+              setFabricanteId(selectedItem.fabricanteId);
+            }}
+            renderButton={(selectedItem, isOpened) => {
+              return (
+                <View style={styles.inputSelect}>
+                  <Text style={styles.dropdownButtonTxtStyle}>
+                    {(selectedItem && selectedItem.fabricanteNome) || 'Selecione o fabricante da Máquina'}
+                  </Text>
+                  <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+                </View>
+              );
+            }}
+            renderItem={(item,  isSelected) => {
+              return (
+                <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                  <Text style={styles.dropdownItemTxtStyle}>{item.fabricanteNome}</Text>
+                </View>
+              );
+            }}
+            showsVerticalScrollIndicator={false}
+            dropdownStyle={styles.dropdownMenuStyle}
           />
-         
+
         </View>
       )}
 
-{step === 4 && ( 
-  <View style={styles.container}>
-  <View style={styles.header}>
-<Text style={styles.title}>Obrigado por cradastrar uma Máquina!</Text>
-</View>
-<TouchableOpacity 
-  style={styles.buttonCadastro} 
-  onPress={() => handle(false)}
->
-  <Text style={styles.buttonText}>
-    Continuar
-  </Text>
-</TouchableOpacity>
-</View>
-)}
+      {step === 4 && (
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <Text style={styles.title}>Obrigado por cradastrar uma Máquina!</Text>
+          </View>
+          <TouchableOpacity
+            style={styles.buttonCadastro}
+            onPress={() => handle(false)}
+          >
+            <Text style={styles.buttonText}>
+              Continuar
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       {step < 3 && (
         <TouchableOpacity style={styles.button} onPress={handleContinue}>
@@ -334,5 +424,47 @@ const styles = StyleSheet.create({
   },
   senha: {
     fontSize: 16,
+  },
+  inputSelect: {
+    borderWidth: 1,
+    borderColor: '#DDD',
+    borderRadius: 15,
+    padding: 10,
+    marginBottom: 20,
+    fontSize: 16,
+    backgroundColor: '#F7F7F7',
+    height: 70,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+
+  dropdownButtonTxtStyle: {
+    flex: 1,
+    fontSize: 18,
+    fontWeight: '500',
+    color: '#919191',
+  },
+  dropdownButtonArrowStyle: {
+    fontSize: 28,
+  },
+  dropdownMenuStyle: {
+    backgroundColor: '#E9ECEF',
+    borderRadius: 8,
+    marginTop: -45
+  },
+  dropdownItemStyle: {
+    width: '100%',
+    flexDirection: 'row',
+    paddingHorizontal: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  dropdownItemTxtStyle: {
+    flex: 1,
+    fontSize: 18,
+    fontWeight: '500',
+    color: '#151E26',
   },
 });

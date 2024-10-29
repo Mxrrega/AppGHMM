@@ -12,23 +12,22 @@ export default function Home() {
     const [menu, setMenu] = useState(false);
 
     async function getMaquinas() {
-        try {
-            const response = await fetch('http://10.139.75.33/api/Maquina/GetAllMaquinas', {
+        
+       await fetch( process.env.EXPO_PUBLIC_URL + '/api/Maquina/GetAllMaquinas', {
                 method: 'GET',
                 headers: {
                     'content-type': 'application/json',
                 },
-            });
-            const data = await response.json();
-            setMaquinas(data);
-        } catch (err) {
-            setError(true);
-        }
+            })
+            .then( res => res.json() )
+            .then( json => setMaquinas( json ) )
+            .catch( err => setError( true ) );
+            
     }
 
     async function deleteMaquina(maquinaId) {
         try {
-            await fetch(`http://10.139.75.33/api/Maquina/DeleteMaquina/${maquinaId}`, {
+            await fetch( process.env.EXPO_PUBLIC_URL + `/api/Maquina/DeleteMaquina/${maquinaId}`, {
                 method: 'DELETE',
             });
             setMaquinas(maquinas.filter(maquina => maquina.maquinaId !== maquinaId));
@@ -55,6 +54,7 @@ export default function Home() {
 
     useFocusEffect(
         React.useCallback(() => {
+            
             getMaquinas();
         }, [])
     );
@@ -99,23 +99,18 @@ export default function Home() {
                     renderSectionHeader={({ section: { setor } }) => (
                         <Text style={styles.setorHeader}>{setor}</Text>
                     )}
-                    renderItem={({ section }) => (
-                        <FlatList
-                            data={section.data}
-                            horizontal={true}
-                            showsHorizontalScrollIndicator={false}
-                            renderItem={({ item }) => (
+                    renderItem={({ item }) => (
+                        <View style={styles.box}>
                                 <Maquinas
                                     maquinaFoto={item.fotoUrl}
                                     maquinaModelo={item.modelo}
                                     maquinaNumeroSerie={item.numeroSerie}
                                     onDelete={() => deleteMaquina(item.maquinaId)}
                                 />
-                            )}
-                            keyExtractor={(item) => item.maquinaId.toString()}
-                        />
+                        </View>
                     )}
                 />
+
             )}
         </View>
     );
@@ -160,5 +155,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#333',
         paddingVertical: 10,
         paddingHorizontal: 20,
+    },
+    box: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
     },
 });
