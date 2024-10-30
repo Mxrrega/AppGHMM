@@ -312,7 +312,7 @@ export default function CadastroMaquina({ handle }) {
       {step === 4 && (
         <View style={styles.container}>
           <View style={styles.header}>
-            <Text style={styles.title}>Obrigado por cradastrar uma Máquina!</Text>
+            <Text style={styles.title}>Obrigado por cadastrar uma Máquina!</Text>
           </View>
           <TouchableOpacity
             style={styles.buttonCadastro}

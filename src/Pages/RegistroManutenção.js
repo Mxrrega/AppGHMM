@@ -11,14 +11,14 @@ export default function RegistroManutencao({ handle }) {
     const [step, setStep] = useState(1);
 
     const [tipoManutencao, setTipoManutencao] = useState('');
+    const [tecnicoManutencao, setTecnicoManutencao] = useState('');
     const [dataManutencao, setDataManutencao] = useState('');
     const [descricaoManutencao, setDescricaoManutencao] = useState('');
     const [custoManutencao, setCustoManutencao] = useState('');
-    const [tecnicoManutencao, setTecnicoManutencao] = useState('');
+    
 
     const [tiposManutencao, setTiposManutencao] = useState([]);
     const [tecnicosManutencao, setTecnicosManutencao] = useState([]);
-    const [fabricantes, setFabricantes] = useState([]);
     const [sucesso, setSucesso] = useState(false);
 
     async function carregarDados() {
@@ -71,10 +71,10 @@ export default function RegistroManutencao({ handle }) {
 
         const manutencoes = {
             tipoManutencao,
+            tecnicoManutencao,
             dataManutencao: moment(dataManutencao, 'DD/MM/YYYY').format('YYYY-MM-DD'),
             descricaoManutencao,
             custoManutencao,
-            tecnicoManutencao
         };
 
         console.log('Manutenção a ser cadastrada:', manutencoes);
@@ -138,31 +138,8 @@ export default function RegistroManutencao({ handle }) {
                     showsVerticalScrollIndicator={false}
                     dropdownStyle={styles.dropdownMenuStyle}
                 />
-                <Text style={styles.label}>Data da Manutenção</Text>
-                <TextInput
-                    value={dataManutencao}
-                    onChangeText={setDataManutencao}
-                    placeholder="Digite a data da Manutenção"
-                    style={styles.input}
-                />
 
-                <Text style={styles.label}>Descrição da Manutenção</Text>
-                <TextInput
-                    value={descricaoManutencao}
-                    onChangeText={setDescricaoManutencao}
-                    placeholder="Digite a descrição da Manutenção"
-                    style={styles.input}
-                />
-
-                <Text style={styles.label}>Custo da Manutenção</Text>
-                <TextInput
-                    value={custoManutencao}
-                    onChangeText={setCustoManutencao}
-                    placeholder="Digite o custo da Manutenção"
-                    style={styles.input}
-                />
-
-                <Text style={styles.label}>Técnico da Manutenção</Text>
+<Text style={styles.label}>Técnico da Manutenção</Text>
                 <SelectDropdown
                     data={tecnicosManutencao}
                     onSelect={(selectedItem) => {
@@ -188,6 +165,32 @@ export default function RegistroManutencao({ handle }) {
                     showsVerticalScrollIndicator={false}
                     dropdownStyle={styles.dropdownMenuStyle}
                 />
+
+                <Text style={styles.label}>Data da Manutenção</Text>
+                <TextInput
+                    value={dataManutencao}
+                    onChangeText={setDataManutencao}
+                    placeholder="Digite a data da Manutenção"
+                    style={styles.input}
+                />
+
+                <Text style={styles.label}>Descrição da Manutenção</Text>
+                <TextInput
+                    value={descricaoManutencao}
+                    onChangeText={setDescricaoManutencao}
+                    placeholder="Digite a descrição da Manutenção"
+                    style={styles.input}
+                />
+
+                <Text style={styles.label}>Custo da Manutenção</Text>
+                <TextInput
+                    value={custoManutencao}
+                    onChangeText={setCustoManutencao}
+                    placeholder="Digite o custo da Manutenção"
+                    style={styles.input}
+                />
+
+                
             </View>
         )}
         {step === 1 && (
@@ -203,7 +206,7 @@ export default function RegistroManutencao({ handle }) {
     {step > 1 && (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.title}>Obrigado por cradastrar uma Manutenção!</Text>
+                <Text style={styles.title}>Obrigado por cadastrar uma Manutenção!</Text>
             </View>
             <TouchableOpacity
                 style={styles.button}
@@ -265,7 +268,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         marginTop: 10,
-        marginBottom: 10,
+        marginBottom: 40,
         height: 70
     },
     buttonText: {

@@ -9,8 +9,7 @@ import LoginScreen from '../Pages/Login';
 import CadastroMaquina from '../Pages/CadastroMaquina';
 import Busca from '../Pages/Busca';
 import Login from '../Pages/Login';
-import Conta from '../Pages/Conta';
-import InventarioPecas from '../Pages/InventarioPecas';
+import Notificacoes from '../Pages/Notificacoes';
 
 const Tab = createBottomTabNavigator();
 
@@ -49,33 +48,6 @@ export default function Rotas() {
                     options={{
                         tabBarIcon: ({ color, size }) => (
                             <MaterialCommunityIcons name="magnify" color={color} size={size} />
-                        ),
-                    }}
-                />
-                <Tab.Screen
-                    name="Login"
-                    component={LoginScreen}
-                    options={{
-                        tabBarIcon: ({ color, size }) => (
-                            <MaterialCommunityIcons name="account" color={color} size={size} />
-                        ),
-                    }}
-                />
-                <Tab.Screen
-                    name="CadastroMaquina"
-                    component={CadastroMaquina}
-                    options={{
-                        tabBarIcon: ({ color, size }) => (
-                            <MaterialCommunityIcons name="plus" color={color} size={size} />
-                        ),
-                    }}
-                />
-                 <Tab.Screen
-                    name="InventarioPecas"
-                    component={InventarioPecas}
-                    options={{
-                        tabBarIcon: ({ color, size }) => (
-                            <MaterialCommunityIcons name="plus" color={color} size={size} />
                         ),
                     }}
                 />

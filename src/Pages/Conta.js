@@ -39,6 +39,7 @@ export default function Conta({handle})  {
         </View>
       </View>
 
+      <View style={styles.box}>
       <View style={styles.field}>
         <Text style={styles.fieldLabel}>Email</Text>
         <View style={styles.fieldValueContainer}>
@@ -94,6 +95,7 @@ export default function Conta({handle})  {
           <Icon name="lock" size={20} color="#B41D1D" />
         </View>
       </View>
+      </View>
     </ScrollView>
   );
 };
@@ -107,6 +109,9 @@ const styles = StyleSheet.create({
   header: {
     marginTop: 10,
     textAlign: 'center',
+  },
+  box: {
+    marginBottom: 50
   },
   backButton: {
     alignSelf: 'flex-start',

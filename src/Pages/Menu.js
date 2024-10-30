@@ -4,11 +4,15 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import CadastroMaquina from './CadastroMaquina';
 import Conta from './Conta';
 import RegistroManutencao from './RegistroManutenção';
+import InventarioPecas from './InventarioPecas';
+import Notificacoes from './Notificacoes';
 
 export default function Configuracoes({handle}) {
 
   const [conta, setConta] = useState(false);
+  const [notificacoes, setNotificacoes] = useState(false);
   const [registroManutencao, setRegistroManutencao] = useState(false);
+  const [inventariopecas, setInventarioPecas] = useState(false);
   const [cadastromaquina, setCadastroMaquina] = useState(false);
 
   if (conta === true) {
@@ -20,6 +24,15 @@ export default function Configuracoes({handle}) {
     setConta(true)
   }
 
+  if (notificacoes === true) {
+    return(
+      <Notificacoes handle={ setNotificacoes } />
+    )
+  }
+  function ExibirNotificacoes() {
+    setNotificacoes(true)
+  }
+
   if ( registroManutencao === true) {
     return(
       <RegistroManutencao handle={ setRegistroManutencao } />
@@ -27,6 +40,15 @@ export default function Configuracoes({handle}) {
   }
   function ExibirRegistroManutencao() {
     setRegistroManutencao(true)
+  }
+
+  if ( inventariopecas === true) {
+    return(
+      <InventarioPecas handle={ setInventarioPecas } />
+    )
+  }
+  function ExibirInventarioPecas() {
+    setInventarioPecas(true)
   }
 
   if (cadastromaquina === true) {
@@ -52,7 +74,7 @@ export default function Configuracoes({handle}) {
         <MaterialCommunityIcons name="chevron-right" size={24} color="white" />
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.menuItem}>
+      <TouchableOpacity onPress={ExibirNotificacoes} style={styles.menuItem}>
         <Text style={styles.menuText}>Notificações</Text>
         <MaterialCommunityIcons name="chevron-right" size={24} color="white" />
       </TouchableOpacity>
@@ -67,7 +89,7 @@ export default function Configuracoes({handle}) {
         <MaterialCommunityIcons name="chevron-right" size={24} color="white" />
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.menuItem}>
+      <TouchableOpacity onPress={ExibirInventarioPecas} style={styles.menuItem}>
         <Text style={styles.menuText}>Inventário de Peças</Text>
         <MaterialCommunityIcons name="chevron-right" size={24} color="white" />
       </TouchableOpacity>
