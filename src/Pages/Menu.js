@@ -2,10 +2,32 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import CadastroMaquina from './CadastroMaquina';
+import Conta from './Conta';
+import RegistroManutencao from './RegistroManutenção';
 
 export default function Configuracoes({handle}) {
 
+  const [conta, setConta] = useState(false);
+  const [registroManutencao, setRegistroManutencao] = useState(false);
   const [cadastromaquina, setCadastroMaquina] = useState(false);
+
+  if (conta === true) {
+    return(
+      <Conta handle={ setConta } />
+    )
+  }
+  function ExibirConta() {
+    setConta(true)
+  }
+
+  if ( registroManutencao === true) {
+    return(
+      <RegistroManutencao handle={ setRegistroManutencao } />
+    )
+  }
+  function ExibirRegistroManutencao() {
+    setRegistroManutencao(true)
+  }
 
   if (cadastromaquina === true) {
     return(
@@ -25,7 +47,7 @@ export default function Configuracoes({handle}) {
       <Text style={styles.title}>Configurações</Text>
       </View>
 
-      <TouchableOpacity style={styles.menuItem}>
+      <TouchableOpacity onPress={ExibirConta}style={styles.menuItem}>
         <Text style={styles.menuText}>Conta</Text>
         <MaterialCommunityIcons name="chevron-right" size={24} color="white" />
       </TouchableOpacity>
@@ -40,7 +62,7 @@ export default function Configuracoes({handle}) {
         <MaterialCommunityIcons name="chevron-right" size={24} color="white" />
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.menuItem}>
+      <TouchableOpacity onPress={ExibirRegistroManutencao} style={styles.menuItem}>
         <Text style={styles.menuText}>Registro de Manutenção</Text>
         <MaterialCommunityIcons name="chevron-right" size={24} color="white" />
       </TouchableOpacity>

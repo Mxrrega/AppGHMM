@@ -7,8 +7,10 @@ import { AuthContext } from '../Context/AuthContext';
 import HomeUsuario from '../Pages/HomeUsuario';
 import LoginScreen from '../Pages/Login';
 import CadastroMaquina from '../Pages/CadastroMaquina';
-import Busca from '../Pages/Busca'
+import Busca from '../Pages/Busca';
 import Login from '../Pages/Login';
+import Conta from '../Pages/Conta';
+import InventarioPecas from '../Pages/InventarioPecas';
 
 const Tab = createBottomTabNavigator();
 
@@ -62,6 +64,15 @@ export default function Rotas() {
                 <Tab.Screen
                     name="CadastroMaquina"
                     component={CadastroMaquina}
+                    options={{
+                        tabBarIcon: ({ color, size }) => (
+                            <MaterialCommunityIcons name="plus" color={color} size={size} />
+                        ),
+                    }}
+                />
+                 <Tab.Screen
+                    name="InventarioPecas"
+                    component={InventarioPecas}
                     options={{
                         tabBarIcon: ({ color, size }) => (
                             <MaterialCommunityIcons name="plus" color={color} size={size} />
