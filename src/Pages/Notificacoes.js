@@ -2,54 +2,55 @@ import React from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-export default function Notificacoes({handle})  {
-    
-const notificationsData = {
-  unread: [
-    {
-      id: '1',
-      sender: 'Adalberto Quinzé',
-      title: 'Peça em Falta',
-      message: 'A peça "Engrenagem Primária" não está disponível no estoque. Por favor, verifique a reposição.',
-      icon: 'numeric-1-circle',
-      iconColor: '#B22222',
-    },
-    {
-      id: '2',
-      sender: 'Filipo Creatino',
-      title: 'Atenção - Manutenção Pendente',
-      message: 'A máquina CNC precisa de uma verificação de rotina para evitar falhas no próximo ciclo de produção.',
-      icon: 'numeric-1-circle',
-      iconColor: '#B22222',
-    },
-  ],
-  read: [
-    {
-      id: '3',
-      sender: 'Filipo Creatino',
-      title: 'Atualização Concluída',
-      message: 'A máquina de corte foi atualizada com o software mais recente. Verifique as novas funcionalidades.',
-      icon: 'check-circle',
-      iconColor: '#32CD32',
-    },
-    {
-      id: '4',
-      sender: 'Adalberto Quinzé',
-      title: 'Chamada de Atenção',
-      message: 'A pressão na máquina de injeção ultrapassou o limite seguro. Equipe técnica já foi notificada.',
-      icon: 'check-circle',
-      iconColor: '#32CD32',
-    },
-    {
-      id: '5',
-      sender: 'Adalberto Quinzé',
-      title: 'Peça Substituída',
-      message: 'A correia transportadora foi trocada e está pronta para uso.',
-      icon: 'check-circle',
-      iconColor: '#32CD32',
-    },
-  ],
-};
+export default function Notificacoes({ handle }) {
+
+  const notificationsData = {
+    unread: [
+      {
+        id: '1',
+        sender: 'Adalberto Quinzé',
+        title: 'Peça em Falta',
+        message: 'A peça "Engrenagem Primária" não está disponível no estoque. Por favor, verifique a reposição.',
+        icon: 'numeric-1-circle',
+        iconColor: '#B22222',
+      },
+      {
+        id: '2',
+        sender: 'Filipo Creatino',
+        title: 'Atenção - Manutenção Pendente',
+        message: 'A máquina CNC precisa de uma verificação de rotina para evitar falhas no próximo ciclo de produção.',
+        icon: 'numeric-1-circle',
+        iconColor: '#B22222',
+      },
+
+    ],
+    read: [
+      {
+        id: '3',
+        sender: 'Filipo Creatino',
+        title: 'Atualização Concluída',
+        message: 'A máquina de corte foi atualizada com o software mais recente. Verifique as novas funcionalidades.',
+        icon: 'check-circle',
+        iconColor: '#32CD32',
+      },
+      {
+        id: '4',
+        sender: 'Adalberto Quinzé',
+        title: 'Chamada de Atenção',
+        message: 'A pressão na máquina de injeção ultrapassou o limite seguro. Equipe técnica já foi notificada.',
+        icon: 'check-circle',
+        iconColor: '#32CD32',
+      },
+      {
+        id: '5',
+        sender: 'Adalberto Quinzé',
+        title: 'Peça Substituída',
+        message: 'A correia transportadora foi trocada e está pronta para uso.',
+        icon: 'check-circle',
+        iconColor: '#32CD32',
+      },
+    ],
+  };
 
 
 
@@ -67,14 +68,20 @@ const notificationsData = {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => handle(false)}>
-          <Icon name="arrow-left" size={24} color="#FFFFFF" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Notificações</Text>
-        <View style={styles.notificationCountContainer}>
-          <Text style={styles.notificationCountText}>2</Text>
+          <TouchableOpacity onPress={() => handle(false)} style={styles.iconButton}>
+            <Icon name="arrow-left" size={24} color="#FFFFFF" />
+          </TouchableOpacity>
+         
+          <View style={styles.notificationCountContainer}>
+             <Text style={styles.headerTitle}>Notificações</Text>
+             <View style={styles.notificationCountBox}>
+            <Text style={styles.notificationCountText}>2</Text>
+            </View>
+          </View>
+          <TouchableOpacity  style={styles.iconButton}>
+            <Icon name="plus" size={24} color="#FFFFFF" />
+          </TouchableOpacity>
         </View>
-      </View>
 
       <Text style={styles.sectionTitle}>NÃO LIDA:</Text>
       <FlatList
@@ -112,15 +119,23 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   notificationCountContainer: {
-    backgroundColor: '#B22222',
-    borderRadius: 20,
     paddingHorizontal: 8,
     paddingVertical: 2,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+
+  notificationCountBox: {
+    borderRadius: 100,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    backgroundColor: '#B22222',
   },
   notificationCountText: {
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',
+    textAlign: 'center'
   },
   sectionTitle: {
     color: '#A9A9A9',

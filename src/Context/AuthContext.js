@@ -9,15 +9,18 @@ function AuthProvider({ children }) {
     const [usuarioNome, setUsuarioNome] = useState(null);
     const [error, setError] = useState(false);
 
-    async function Login(cpf, senha) {
-        if (cpf !== "" && senha !== "") {
-            await fetch('http://10.139.75.91/api/Usuario/Login', {
+    async function Login(email, cpf, senha) {
+
+        console.log('chegou')
+        if (email !== "" && cpf !== "" && senha !== "") {
+            await fetch(process.env.EXPO_PUBLIC_URL + '/api/Usuario/Login', {
                 method: 'POST',
                 headers: {
                     'content-type': 'application/json'
                 },
                 body: JSON.stringify({
-                    usuarioCPF: cpf,
+                    usuarioEmail: email,
+                    usuarioCpf: cpf,
                     usuarioSenha: senha
                 })
             })
@@ -30,9 +33,10 @@ function AuthProvider({ children }) {
                         setError(false);
                     } else {
                         setError(true);
+                         console.error('Erro ao fazer login:', json);
                     }
                 })
-                .catch(err => setError(true));
+                .catch(err => console.error('Erro ao fazer login:', err));
         } else {
             setError(true);
         }

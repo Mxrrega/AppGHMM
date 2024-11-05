@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, SectionList, FlatList, TouchableOpacity } from 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Maquinas from '../Components/Maquinas';
 import { useFocusEffect } from '@react-navigation/native';
+import * as Animatable from 'react-native-animatable';
 import Menu from './Menu';
 
 export default function Home() {
@@ -12,22 +13,20 @@ export default function Home() {
     const [menu, setMenu] = useState(false);
 
     async function getMaquinas() {
-        
-       await fetch( process.env.EXPO_PUBLIC_URL + '/api/Maquina/GetAllMaquinas', {
-                method: 'GET',
-                headers: {
-                    'content-type': 'application/json',
-                },
-            })
-            .then( res => res.json() )
-            .then( json => setMaquinas( json ) )
-            .catch( err => setError( true ) );
-            
+        await fetch(process.env.EXPO_PUBLIC_URL + '/api/Maquina/GetAllMaquinas', {
+            method: 'GET',
+            headers: {
+                'content-type': 'application/json',
+            },
+        })
+        .then(res => res.json())
+        .then(json => setMaquinas(json))
+        .catch(err => setError(true));
     }
 
     async function deleteMaquina(maquinaId) {
         try {
-            await fetch( process.env.EXPO_PUBLIC_URL + `/api/Maquina/DeleteMaquina/${maquinaId}`, {
+            await fetch(process.env.EXPO_PUBLIC_URL + `/api/Maquina/DeleteMaquina/${maquinaId}`, {
                 method: 'DELETE',
             });
             setMaquinas(maquinas.filter(maquina => maquina.maquinaId !== maquinaId));
@@ -54,7 +53,6 @@ export default function Home() {
 
     useFocusEffect(
         React.useCallback(() => {
-            
             getMaquinas();
         }, [])
     );
@@ -72,7 +70,9 @@ export default function Home() {
     };
 
     if (menu === true) {
-        return <Menu handle={setMenu} />;
+        return <Animatable.View animation="slideInRight" duration={500} style={styles.menuContainer}>
+        <Menu handle={setMenu} />
+    </Animatable.View>
     }
     function ExibirMenu() {
         setMenu(true);
@@ -80,15 +80,19 @@ export default function Home() {
 
     return (
         <View style={styles.container}>
-            <View style={styles.subHeader}>
+            <Animatable.View animation="slideInDown" duration={800} style={styles.subHeader}>
                 <Text style={styles.greetingText}>{greeting}</Text>
                 <View style={styles.headerIcons}>
-                    <MaterialCommunityIcons name="qrcode-scan" size={24} color="white" style={styles.iconSpacing} />
+                    <Animatable.View animation="pulse" iterationCount="infinite" iterationDelay={3000}>
+                        <MaterialCommunityIcons name="qrcode-scan" size={24} color="white" style={styles.iconSpacing} />
+                    </Animatable.View>
                     <TouchableOpacity onPress={ExibirMenu}>
-                        <MaterialCommunityIcons name="menu" size={24} color="white" style={styles.iconSpacing} />
+                        <Animatable.View animation="bounceIn" duration={1500}>
+                            <MaterialCommunityIcons name="menu" size={24} color="white" style={styles.iconSpacing} />
+                        </Animatable.View>
                     </TouchableOpacity>
                 </View>
-            </View>
+            </Animatable.View>
 
             {error ? (
                 <Text style={styles.errorText}>Erro ao carregar as máquinas!</Text>
@@ -97,20 +101,21 @@ export default function Home() {
                     sections={groupBySetor(maquinas)}
                     keyExtractor={(item) => item.maquinaId.toString()}
                     renderSectionHeader={({ section: { setor } }) => (
-                        <Text style={styles.setorHeader}>{setor}</Text>
+                        <Animatable.Text animation="fadeIn" delay={200} style={styles.setorHeader}>
+                            {setor}
+                        </Animatable.Text>
                     )}
                     renderItem={({ item }) => (
-                        <View style={styles.box}>
-                                <Maquinas
-                                    maquinaFoto={item.fotoUrl}
-                                    maquinaModelo={item.modelo}
-                                    maquinaNumeroSerie={item.numeroSerie}
-                                    onDelete={() => deleteMaquina(item.maquinaId)}
-                                />
-                        </View>
+                        <Animatable.View animation="fadeInUp" delay={200} style={styles.box}>
+                            <Maquinas
+                                maquinaFoto={item.fotoUrl}
+                                maquinaModelo={item.modelo}
+                                maquinaNumeroSerie={item.numeroSerie}
+                                onDelete={() => deleteMaquina(item.maquinaId)}
+                            />
+                        </Animatable.View>
                     )}
                 />
-
             )}
         </View>
     );
@@ -160,5 +165,14 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+    },
+    menuContainer: {
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0,
+        backgroundColor: '#2E2E2E',
+        zIndex: 10,
     },
 });

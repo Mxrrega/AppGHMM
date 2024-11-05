@@ -6,6 +6,7 @@ import Cadastro from './Cadastro'
 
 export default function Login() {
 
+  const [email, setEmail] = useState('');
   const [cpf, setCpf] = useState('');
   const [senha, setSenha] = useState('');
   const [Versenha, setVersenha] = useState(false);
@@ -13,9 +14,21 @@ export default function Login() {
 
   const { Login, error } = useContext(AuthContext);
 
-  function RealizaLogin() {
-    Login(cpf, senha);
+  async function RealizaLogin() {
+
+    
+    const dados = {
+      email,
+      cpf,
+      senha
+    }
+
+    console.log( dados )
+
+    Login(email, cpf, senha);
   }
+
+  
 
   const VerSenha = () => {
     setVersenha(!Versenha);
@@ -36,12 +49,20 @@ export default function Login() {
         <View style={styles.header}>
           <Text style={styles.TituloPagInicial}>Seja Bem Vindo!</Text>
         </View>
+        <Text style={styles.label}>Email</Text>
+        <TextInput
+          value={email}
+          onChangeText={setEmail}
+          placeholder="Digite seu Email"
+          style={styles.input}
+        />
+
+
         <Text style={styles.label}>CPF</Text>
         <TextInput
           value={cpf}
           onChangeText={setCpf}
           placeholder="Digite seu CPF"
-          keyboardType="numeric"
           style={styles.input}
         />
 

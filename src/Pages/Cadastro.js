@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon from 'react-native-vector-icons/Ionicons'; 
+import SelectDropdown from 'react-native-select-dropdown';
+import moment from 'moment';
 
 export default function Cadastro({handle}) {
   const [step, setStep] = useState(1);
@@ -13,8 +16,48 @@ export default function Cadastro({handle}) {
   const [escolaridade, setEscolaridade] = useState('');
   const [urlFoto, setUrlFoto] = useState('');
   const [senha, setSenha] = useState('');
-  const [agradecimento, setAgradecimento] = useState(false);
+  const [cargoId, setCargoId] = useState('');
+  const [setorId, setSetorId] = useState('');
+
   const [Versenha, setVersenha] = useState(false);
+  const [sucesso, setSucesso] = useState(false);
+
+  const [cargos, setCargos] = useState('');
+  const [setores, setSetores] = useState('');
+
+  async function carregarDados() {
+
+    await fetch(process.env.EXPO_PUBLIC_URL + '/api/Cargo/GetAllCargos', {
+      method: 'GET',
+      headers: {
+        'content-type': 'application/json',
+      },
+    })
+      .then(res => res.json())
+      .then(json => setCargos(json))
+      .catch(err => console.error('Erro ao carregar cargos:', err));
+
+      await fetch(process.env.EXPO_PUBLIC_URL + '/api/Setor/GetAllSetores', {
+        method: 'GET',
+        headers: {
+          'content-type': 'application/json',
+        },
+      })
+        .then(res => res.json())
+        .then(json => setSetores(json))
+        .catch(err => console.error('Erro ao carregar setores:', err));
+  }
+
+  useEffect(() => {
+    carregarDados();
+  }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+        
+        carregarDados();
+    }, [])
+);
 
   const handleContinue = () => {
     if (step < 4) setStep(step + 1);
@@ -24,22 +67,48 @@ export default function Cadastro({handle}) {
     if (step > 1) setStep(step - 1);
   };
 
-  function ExibirAgradecimento() {
+  if (sucesso === true ) {
+    handleContinue();
+  }
+
+  async function Cadastrar() {
+
+    if (!moment(dataNascimento, 'DD/MM/YYYY', true).isValid()) {
+      Alert.alert('Erro', 'A data de nascimento está inválida. Use o formato DD/MM/YYYY.');
+      return;
+    }
+
     const dados = {
       nome, cpf, email, telefone, dataNascimento, escolaridade, urlFoto, senha
     };
-    console.log('Dados enviados:', dados);
-    setNome("");
-    setCpf("");
-    setEmail("");
-    setTelefone("");
-    setDataNascimento("");
-    setEscolaridade("");
-    setUrlFoto("");
-    setSenha("");
-    setAgradecimento(true)
 
-    handleContinue()
+    console.log('Dados enviados:', dados);
+
+    await fetch(process.env.EXPO_PUBLIC_URL + '/api/Usuario/CreateUsuario', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify(
+        {
+          usuarioNome: nome,
+          usuarioCpf: cpf,
+          usuarioEmail: email,
+          usuarioTelefone : telefone,
+          usuarioDataNascimento: moment(dataNascimento, 'DD/MM/YYYY').format('YYYY-MM-DD'),
+          usuarioEscolaridade: escolaridade,
+          urlFofotoUrlto: urlFoto,
+          usuarioSenha: senha,
+          cargoId: cargoId,
+          setorId: setorId,
+        }
+      )
+    })
+      .then(res => res.json())
+      .then(json => console.log(json))
+      .then(json => (json ? console.log('Erro') : setSucesso(true)))
+      .catch(err => console.error('Erro ao cadastrar o usuário. Código de status:', err));
+      
   }
 
   const VerSenha = () => {
@@ -150,6 +219,59 @@ export default function Cadastro({handle}) {
             </TouchableOpacity>
           </View>
           
+          <Text style={styles.label}>Cargo</Text>
+                <SelectDropdown
+                    data={cargos}
+                    onSelect={(selectedItem) => {
+                        setCargoId(selectedItem.cargoId);
+                    }}
+                    renderButton={(selectedItem, isOpened) => {
+                        return (
+                            <View style={styles.inputSelect}>
+                                <Text style={styles.dropdownButtonTxtStyle}>
+                                    {(selectedItem && selectedItem.cargoNome) || 'Selecione o cargo'}
+                                </Text>
+                                <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+                            </View>
+                        );
+                    }}
+                    renderItem={(item, isSelected) => {
+                        return (
+                            <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                                <Text style={styles.dropdownItemTxtStyle}>{item.cargoNome}</Text>
+                            </View>
+                        );
+                    }}
+                    showsVerticalScrollIndicator={false}
+                    dropdownStyle={styles.dropdownMenuStyle}
+                />
+
+<Text style={styles.label}>Setor</Text>
+                <SelectDropdown
+                    data={setores}
+                    onSelect={(selectedItem) => {
+                        setSetorId(selectedItem.setorId);
+                    }}
+                    renderButton={(selectedItem, isOpened) => {
+                        return (
+                            <View style={styles.inputSelect}>
+                                <Text style={styles.dropdownButtonTxtStyle}>
+                                    {(selectedItem && selectedItem.setorNome) || 'Selecione o setor'}
+                                </Text>
+                                <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+                            </View>
+                        );
+                    }}
+                    renderItem={(item, isSelected) => {
+                        return (
+                            <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                                <Text style={styles.dropdownItemTxtStyle}>{item.setorNome}</Text>
+                            </View>
+                        );
+                    }}
+                    showsVerticalScrollIndicator={false}
+                    dropdownStyle={styles.dropdownMenuStyle}
+                />
           
         </View>
       )}
@@ -170,7 +292,7 @@ export default function Cadastro({handle}) {
 {step === 3 && (
       <TouchableOpacity 
         style={styles.buttonCadastro} 
-        onPress={ExibirAgradecimento}
+        onPress={Cadastrar}
       >
         <Text style={styles.buttonText}>
           Cadastrar                                                                
@@ -285,6 +407,48 @@ const styles = StyleSheet.create({
   },
   senha: {
     fontSize: 16,
+  },
+  inputSelect: {
+    borderWidth: 1,
+    borderColor: '#DDD',
+    borderRadius: 15,
+    padding: 10,
+    marginBottom: 20,
+    fontSize: 16,
+    backgroundColor: '#F7F7F7',
+    height: 70,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+
+  dropdownButtonTxtStyle: {
+    flex: 1,
+    fontSize: 18,
+    fontWeight: '500',
+    color: '#919191',
+  },
+  dropdownButtonArrowStyle: {
+    fontSize: 28,
+  },
+  dropdownMenuStyle: {
+    backgroundColor: '#E9ECEF',
+    borderRadius: 8,
+    marginTop: -45
+  },
+  dropdownItemStyle: {
+    width: '100%',
+    flexDirection: 'row',
+    paddingHorizontal: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  dropdownItemTxtStyle: {
+    flex: 1,
+    fontSize: 18,
+    fontWeight: '500',
+    color: '#151E26',
   },
 });
 
