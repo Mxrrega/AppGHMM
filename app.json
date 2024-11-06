@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Ex3",
-    "slug": "Ex3",
+    "name": "GHMM",
+    "slug": "GHMM",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -11,6 +11,14 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "plugins": [
+      [
+        "expo-barcode-scanner",
+        {
+          "cameraPermission": "Permitir $(GHMM) para acessar sua câmera."
+        }
+      ]
+    ],
     "assetBundlePatterns": [
       "**/*"
     ],
