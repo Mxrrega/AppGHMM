@@ -14,9 +14,8 @@ export default function Login() {
 
   const { Login, error } = useContext(AuthContext);
 
-  async function RealizaLogin() {
+  function RealizaLogin() {
 
-    
     const dados = {
       email,
       cpf,
@@ -91,8 +90,9 @@ export default function Login() {
 
       <TouchableOpacity
         style={styles.button}
+        onPress={RealizaLogin}
       >
-        <Text style={styles.buttonText} onPress={RealizaLogin}>
+        <Text style={styles.buttonText} >
           Login
         </Text>
       </TouchableOpacity>

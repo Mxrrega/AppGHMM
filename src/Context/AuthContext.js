@@ -2,7 +2,7 @@ import { createContext, useState } from "react";
 
 export const AuthContext = createContext(0);
 
-function AuthProvider({ children }) {
+export default function AuthProvider({ children }) {
 
     const [logado, setLogado] = useState(true);
     const [cargoId, setCargoId] = useState(null);
@@ -26,7 +26,7 @@ function AuthProvider({ children }) {
             })
                 .then(res => res.json())
                 .then(json => {
-                    if (json.usuarioId) {
+                    if (json === true) {
                         setLogado(true);
                         setCargoId(json.cargoId);
                         setUsuarioNome(json.usuarioNome);
@@ -34,11 +34,13 @@ function AuthProvider({ children }) {
                     } else {
                         setError(true);
                          console.error('Erro ao fazer login:', json);
+                         console.log('corno2')
                     }
                 })
                 .catch(err => console.error('Erro ao fazer login:', err));
         } else {
             setError(true);
+            console.log('corno3')
         }
     }
 
@@ -49,4 +51,3 @@ function AuthProvider({ children }) {
     );
 }
 
-export default AuthProvider;

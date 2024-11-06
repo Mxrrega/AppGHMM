@@ -33,7 +33,7 @@ export default function RegistroManutencao({ handle }) {
             .then(json => setTiposManutencao(json))
             .catch(err => console.error('Erro ao carregar tipos de manutenções:', err));
 
-        await fetch(process.env.EXPO_PUBLIC_URL + '/api/', {
+        await fetch(process.env.EXPO_PUBLIC_URL + '/api/Tecnico/GetAllTecnicos', {
             method: 'GET',
             headers: {
                 'content-type': 'application/json',

@@ -8,6 +8,7 @@ import Menu from './Menu';
 
 export default function Home() {
     const [maquinas, setMaquinas] = useState([]);
+    const [setores, setSetores] = useState([]);
     const [error, setError] = useState(false);
     const [greeting, setGreeting] = useState('');
     const [menu, setMenu] = useState(false);
@@ -19,9 +20,21 @@ export default function Home() {
                 'content-type': 'application/json',
             },
         })
-        .then(res => res.json())
-        .then(json => setMaquinas(json))
-        .catch(err => setError(true));
+            .then(res => res.json())
+            .then(json => setMaquinas(json))
+            .catch(err => setError(true));
+    }
+
+    async function getSetores() {
+        await fetch(process.env.EXPO_PUBLIC_URL + '/api/Setor/GetAllSetores', {
+            method: 'GET',
+            headers: {
+                'content-type': 'application/json',
+            },
+        })
+            .then(res => res.json())
+            .then(json => setSetores(json))
+            .catch(err => setError(true));
     }
 
     async function deleteMaquina(maquinaId) {
@@ -53,6 +66,7 @@ export default function Home() {
 
     useFocusEffect(
         React.useCallback(() => {
+            getSetores();
             getMaquinas();
         }, [])
     );
@@ -71,8 +85,8 @@ export default function Home() {
 
     if (menu === true) {
         return <Animatable.View animation="slideInRight" duration={500} style={styles.menuContainer}>
-        <Menu handle={setMenu} />
-    </Animatable.View>
+            <Menu handle={setMenu} />
+        </Animatable.View>
     }
     function ExibirMenu() {
         setMenu(true);
@@ -97,25 +111,29 @@ export default function Home() {
             {error ? (
                 <Text style={styles.errorText}>Erro ao carregar as máquinas!</Text>
             ) : (
-                <SectionList
-                    sections={groupBySetor(maquinas)}
-                    keyExtractor={(item) => item.maquinaId.toString()}
-                    renderSectionHeader={({ section: { setor } }) => (
-                        <Animatable.Text animation="fadeIn" delay={200} style={styles.setorHeader}>
-                            {setor}
-                        </Animatable.Text>
-                    )}
-                    renderItem={({ item }) => (
-                        <Animatable.View animation="fadeInUp" delay={200} style={styles.box}>
-                            <Maquinas
-                                maquinaFoto={item.fotoUrl}
-                                maquinaModelo={item.modelo}
-                                maquinaNumeroSerie={item.numeroSerie}
-                                onDelete={() => deleteMaquina(item.maquinaId)}
+                maquinas && setores &&
+                setores.map((setor) => {
+                    return (
+                        <>
+                            <Animatable.Text animation="fadeIn" delay={400} style={styles.setorHeader}>
+                                {setor.setorNome}
+                            </Animatable.Text>
+                            <FlatList
+                                data={maquinas}
+                                horizontal={true}
+                                renderItem={({item}) => 
+                                    <Animatable.View animation="fadeInRight" delay={400} style={styles.box}>
+                                        <Maquinas
+                                            setor={setor.setorId}
+                                            item={item}
+                                            onDelete={() => deleteMaquina(item.maquinaId)}
+                                        />
+                                    </Animatable.View>
+                                }
                             />
-                        </Animatable.View>
-                    )}
-                />
+                        </>
+                    )
+                })
             )}
         </View>
     );
