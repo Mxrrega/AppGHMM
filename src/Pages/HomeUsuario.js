@@ -5,6 +5,7 @@ import Maquinas from '../Components/Maquinas';
 import { useFocusEffect } from '@react-navigation/native';
 import * as Animatable from 'react-native-animatable';
 import Menu from './Menu';
+import QRCode from './Qrcode';
 
 export default function Home() {
     const [maquinas, setMaquinas] = useState([]);
@@ -83,7 +84,7 @@ export default function Home() {
 
     if (qrcode === true) {
         return <Animatable.View animation="slideInRight" duration={500} style={styles.menuContainer}>
-            <Qrcode handle={setMenu} />
+            <QRCode handle={setMenu} />
         </Animatable.View>
     }
     function ExibirQRcode() {

@@ -10,6 +10,7 @@ import CadastroMaquina from '../Pages/CadastroMaquina';
 import Busca from '../Pages/Busca';
 import Login from '../Pages/Login';
 import Notificacoes from '../Pages/Notificacoes';
+import Qrcode from '../Pages/Qrcode'
 
 const Tab = createBottomTabNavigator();
 
@@ -52,8 +53,8 @@ export default function Rotas() {
                     }}
                 />
                 <Tab.Screen
-                    name="Login"
-                    component={Login}
+                    name="Qrcode"
+                    component={Qrcode}
                     options={{
                         tabBarIcon: ({ color, size }) => (
                             <MaterialCommunityIcons name="magnify" color={color} size={size} />
