@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, SectionList, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, SectionList, FlatList, TouchableOpacity , ScrollView} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Maquinas from '../Components/Maquinas';
 import { useFocusEffect } from '@react-navigation/native';
@@ -12,6 +12,7 @@ export default function Home() {
     const [error, setError] = useState(false);
     const [greeting, setGreeting] = useState('');
     const [menu, setMenu] = useState(false);
+    const [qrcode, setQrCode] = useState(false);
 
     async function getMaquinas() {
         await fetch(process.env.EXPO_PUBLIC_URL + '/api/Maquina/GetAllMaquinas', {
@@ -71,18 +72,6 @@ export default function Home() {
         }, [])
     );
 
-    const groupBySetor = (maquinas) => {
-        const setores = {};
-        maquinas.forEach((maquina) => {
-            const setor = maquina.setorId || 'Sem Setor';
-            if (!setores[setor]) {
-                setores[setor] = [];
-            }
-            setores[setor].push(maquina);
-        });
-        return Object.keys(setores).map((setor) => ({ setor, data: setores[setor] }));
-    };
-
     if (menu === true) {
         return <Animatable.View animation="slideInRight" duration={500} style={styles.menuContainer}>
             <Menu handle={setMenu} />
@@ -92,14 +81,25 @@ export default function Home() {
         setMenu(true);
     }
 
+    if (qrcode === true) {
+        return <Animatable.View animation="slideInRight" duration={500} style={styles.menuContainer}>
+            <Qrcode handle={setMenu} />
+        </Animatable.View>
+    }
+    function ExibirQRcode() {
+        setQrCode(true);
+    }
+
     return (
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
             <Animatable.View animation="slideInDown" duration={800} style={styles.subHeader}>
                 <Text style={styles.greetingText}>{greeting}</Text>
                 <View style={styles.headerIcons}>
+                <TouchableOpacity onPress={ExibirQRcode}>
                     <Animatable.View animation="pulse" iterationCount="infinite" iterationDelay={3000}>
                         <MaterialCommunityIcons name="qrcode-scan" size={24} color="white" style={styles.iconSpacing} />
                     </Animatable.View>
+                    </TouchableOpacity>
                     <TouchableOpacity onPress={ExibirMenu}>
                         <Animatable.View animation="bounceIn" duration={1500}>
                             <MaterialCommunityIcons name="menu" size={24} color="white" style={styles.iconSpacing} />
@@ -135,7 +135,7 @@ export default function Home() {
                     )
                 })
             )}
-        </View>
+        </ScrollView>
     );
 }
 

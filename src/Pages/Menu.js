@@ -6,6 +6,7 @@ import Conta from './Conta';
 import RegistroManutencao from './RegistroManutenção';
 import InventarioPecas from './InventarioPecas';
 import Notificacoes from './Notificacoes';
+import * as Animatable from 'react-native-animatable';
 
 export default function Configuracoes({handle}) {
 
@@ -69,39 +70,53 @@ export default function Configuracoes({handle}) {
       <Text style={styles.title}>Configurações</Text>
       </View>
 
-      <TouchableOpacity onPress={ExibirConta}style={styles.menuItem}>
+      <TouchableOpacity onPress={ExibirConta}>
+        <Animatable.View animation="slideInRight" duration={500} style={styles.menuItem}>
         <Text style={styles.menuText}>Conta</Text>
         <MaterialCommunityIcons name="chevron-right" size={24} color="white" />
+        </Animatable.View>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={ExibirNotificacoes} style={styles.menuItem}>
+      <TouchableOpacity onPress={ExibirNotificacoes} >
+      <Animatable.View animation="slideInRight" duration={500} style={styles.menuItem}>
         <Text style={styles.menuText}>Notificações</Text>
         <MaterialCommunityIcons name="chevron-right" size={24} color="white" />
+        </Animatable.View>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.menuItem}>
+      <TouchableOpacity>
+      <Animatable.View animation="slideInRight" duration={500} style={styles.menuItem}>
         <Text style={styles.menuText}>Histórico</Text>
         <MaterialCommunityIcons name="chevron-right" size={24} color="white" />
+        </Animatable.View>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={ExibirRegistroManutencao} style={styles.menuItem}>
+      <TouchableOpacity onPress={ExibirRegistroManutencao}>
+      <Animatable.View animation="slideInRight" duration={500} style={styles.menuItem}>
         <Text style={styles.menuText}>Registro de Manutenção</Text>
         <MaterialCommunityIcons name="chevron-right" size={24} color="white" />
+        </Animatable.View>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={ExibirInventarioPecas} style={styles.menuItem}>
+      <TouchableOpacity onPress={ExibirInventarioPecas}>
+      <Animatable.View animation="slideInRight" duration={500} style={styles.menuItem}>
         <Text style={styles.menuText}>Inventário de Peças</Text>
         <MaterialCommunityIcons name="chevron-right" size={24} color="white" />
+        </Animatable.View>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.menuItem}>
+      <TouchableOpacity>
+      <Animatable.View animation="slideInRight" duration={500} style={styles.menuItem}>
         <Text style={styles.menuText}>Relatório do Funcionário</Text>
         <MaterialCommunityIcons name="chevron-right" size={24} color="white" />
+        </Animatable.View>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={ExibirCadastroMaquina} style={styles.menuItem}>
+      <TouchableOpacity onPress={ExibirCadastroMaquina}>
+      <Animatable.View animation="slideInRight" duration={500} style={styles.menuItem}>
         <Text style={styles.menuText}>Cadastro de Máquinas</Text>
         <MaterialCommunityIcons name="chevron-right" size={24} color="white" />
+        </Animatable.View>
       </TouchableOpacity>
     </View>
   );
