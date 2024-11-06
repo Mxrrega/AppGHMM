@@ -23,7 +23,7 @@ export default function RegistroManutencao({ handle }) {
 
     async function carregarDados() {
 
-        await fetch(process.env.EXPO_PUBLIC_URL + '/api/', {
+        await fetch(process.env.EXPO_PUBLIC_URL + '/api/TipoManutencao/GetAllTipoManutencao', {
             method: 'GET',
             headers: {
                 'content-type': 'application/json',
