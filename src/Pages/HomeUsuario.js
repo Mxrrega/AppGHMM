@@ -84,7 +84,7 @@ export default function Home() {
 
     if (qrcode === true) {
         return <Animatable.View animation="slideInRight" duration={500} style={styles.menuContainer}>
-            <QRCode handle={setMenu} />
+            <QRCode handle={setQrCode} />
         </Animatable.View>
     }
     function ExibirQRcode() {
@@ -115,13 +115,14 @@ export default function Home() {
                 maquinas && setores &&
                 setores.map((setor) => {
                     return (
-                        <>
+                        <View key={setor.setorId}>
                             <Animatable.Text animation="fadeIn" delay={400} style={styles.setorHeader}>
                                 {setor.setorNome}
                             </Animatable.Text>
                             <FlatList
                                 data={maquinas}
                                 horizontal={true}
+                                keyExtractor={(item) => item.maquinaId}
                                 renderItem={({item}) => 
                                     <Animatable.View animation="fadeInRight" delay={400} style={styles.box}>
                                         <Maquinas
@@ -132,7 +133,7 @@ export default function Home() {
                                     </Animatable.View>
                                 }
                             />
-                        </>
+                        </View>
                     )
                 })
             )}
