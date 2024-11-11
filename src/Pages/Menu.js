@@ -71,7 +71,7 @@ export default function Configuracoes({handle}) {
       </View>
 
       <TouchableOpacity onPress={ExibirConta}>
-        <Animatable.View animation="slideInRight" duration={500} style={styles.menuItem}>
+        <Animatable.View animation="slideInRight" duration={400} style={styles.menuItem}>
         <Text style={styles.menuText}>Conta</Text>
         <MaterialCommunityIcons name="chevron-right" size={24} color="white" />
         </Animatable.View>
@@ -85,35 +85,35 @@ export default function Configuracoes({handle}) {
       </TouchableOpacity>
 
       <TouchableOpacity>
-      <Animatable.View animation="slideInRight" duration={500} style={styles.menuItem}>
+      <Animatable.View animation="slideInRight" duration={700} style={styles.menuItem}>
         <Text style={styles.menuText}>Histórico</Text>
         <MaterialCommunityIcons name="chevron-right" size={24} color="white" />
         </Animatable.View>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={ExibirRegistroManutencao}>
-      <Animatable.View animation="slideInRight" duration={500} style={styles.menuItem}>
+      <Animatable.View animation="slideInRight" duration={800} style={styles.menuItem}>
         <Text style={styles.menuText}>Registro de Manutenção</Text>
         <MaterialCommunityIcons name="chevron-right" size={24} color="white" />
         </Animatable.View>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={ExibirInventarioPecas}>
-      <Animatable.View animation="slideInRight" duration={500} style={styles.menuItem}>
+      <Animatable.View animation="slideInRight" duration={900} style={styles.menuItem}>
         <Text style={styles.menuText}>Inventário de Peças</Text>
         <MaterialCommunityIcons name="chevron-right" size={24} color="white" />
         </Animatable.View>
       </TouchableOpacity>
 
       <TouchableOpacity>
-      <Animatable.View animation="slideInRight" duration={500} style={styles.menuItem}>
+      <Animatable.View animation="slideInRight" duration={1000} style={styles.menuItem}>
         <Text style={styles.menuText}>Relatório do Funcionário</Text>
         <MaterialCommunityIcons name="chevron-right" size={24} color="white" />
         </Animatable.View>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={ExibirCadastroMaquina}>
-      <Animatable.View animation="slideInRight" duration={500} style={styles.menuItem}>
+      <Animatable.View animation="slideInRight" duration={1100} style={styles.menuItem}>
         <Text style={styles.menuText}>Cadastro de Máquinas</Text>
         <MaterialCommunityIcons name="chevron-right" size={24} color="white" />
         </Animatable.View>

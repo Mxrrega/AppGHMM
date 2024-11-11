@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, FlatList, StyleSheet, Image, TextInput, S
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import SelectDropdown from 'react-native-select-dropdown';
+import * as Animatable from 'react-native-animatable';
 
 export default function InventarioPecas({ handle }) {
 
@@ -84,12 +85,12 @@ export default function InventarioPecas({ handle }) {
 
   async function alterarQTD(categoriaPecaId) {
     try {
-        await fetch( process.env.EXPO_PUBLIC_URL + `/api/Maquina/DeleteMaquina/${categoriaPecaId}`, {
+        await fetch( process.env.EXPO_PUBLIC_URL + `/api/${categoriaPecaId}`, {
             method: 'DELETE',
         });
         setMaquinas(categoria.filter(CategoriaPeca => CategoriaPeca.CategoriaPecaId !== CategoriaPeca));
     } catch (err) {
-        console.error('Erro ao deletar máquina:', err);
+        console.error('Erro ao alterar Quantidade:', err);
     }
 }
 
@@ -107,7 +108,7 @@ export default function InventarioPecas({ handle }) {
         </View>
       )}
       {step === 1 && (
-        <View>
+        <Animatable.View animation="slideInRight" duration={400}>
           <FlatList
             data={inventoryData}
             keyExtractor={(item) => item.category}
@@ -121,19 +122,19 @@ export default function InventarioPecas({ handle }) {
                 {expandedCategorias[item.category] && (
                   <View style={styles.itemsContainer}>
                     {item.items.map((piece, index) => (
-                      <View key={index}>
+                      <Animatable.View animation="fadeInDownBig" duration={500} key={index}>
                         <TouchableOpacity style={styles.itemRow} onPress={alterarQTD}>
                           <Text style={styles.itemText}>• {piece.name}</Text>
                           <Text style={styles.quantityText}>{piece.quantity}</Text>
                         </TouchableOpacity>
-                      </View>
+                      </Animatable.View>
                     ))}
                   </View>
                 )}
               </View>
             )}
           />
-        </View>
+        </Animatable.View>
       )}
 
       {step === 2 && (
@@ -142,9 +143,9 @@ export default function InventarioPecas({ handle }) {
             <TouchableOpacity onPress={handleBack} style={styles.backButtonRegistro}>
               <MaterialCommunityIcons name="arrow-left" size={24} color="white" />
             </TouchableOpacity>
-            <Text style={styles.title}>Registro de Peça</Text>
+            <Animatable.Text animation="fadeInUp" delay={25} style={styles.title}>Registro de Peça</Animatable.Text>
           </View>
-
+        <Animatable.View animation="fadeInUp" delay={50}>
           <Text style={styles.label}>Nome da Peça</Text>
           <TextInput
             value={nomePeca}
@@ -224,6 +225,7 @@ export default function InventarioPecas({ handle }) {
               Cadastrar
             </Text>
           </TouchableOpacity>
+          </Animatable.View>
 
         </ScrollView>
       )}
@@ -259,7 +261,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: 20,
+    marginTop: 40,
     marginBottom: 20,
   },
   iconButton: {

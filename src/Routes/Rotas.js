@@ -7,6 +7,7 @@ import { AuthContext } from '../Context/AuthContext';
 import HomeUsuario from '../Pages/HomeUsuario';
 import LoginScreen from '../Pages/Login';
 import CadastroMaquina from '../Pages/CadastroMaquina';
+import Cadastro from '../Pages/Cadastro';
 import Busca from '../Pages/Busca';
 import Login from '../Pages/Login';
 import Notificacoes from '../Pages/Notificacoes';

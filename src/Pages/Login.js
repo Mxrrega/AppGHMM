@@ -2,7 +2,8 @@ import React, { useContext, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { AuthContext } from '../Context/AuthContext';
-import Cadastro from './Cadastro'
+import Cadastro from './Cadastro';
+import * as Animatable from 'react-native-animatable';
 
 export default function Login() {
 
@@ -34,17 +35,17 @@ export default function Login() {
   };
 
   if (cadastro === true) {
-    return (
-      <Cadastro handle={setCadastro} />
-    )
-  }
-  function ExibirCadastro() {
-    setCadastro(true)
-  }
+    return <Animatable.View animation="slideInRight" duration={500} >
+        <Cadastro handle={setCadastro} />
+    </Animatable.View>
+}
+function ExibirCadastro() {
+    setCadastro(true);
+}
 
   return (
     <ScrollView style={styles.container}>
-      <View>
+      <Animatable.View animation="fadeIn" duration={800}>
         <View style={styles.header}>
           <Text style={styles.TituloPagInicial}>Seja Bem Vindo!</Text>
         </View>
@@ -83,7 +84,7 @@ export default function Login() {
             />
           </TouchableOpacity>
         </View>
-      </View>
+      </Animatable.View>
       <TouchableOpacity onPress={ExibirCadastro}>
         <Text style={styles.cadastro}>Cadastre-se</Text>
       </TouchableOpacity>

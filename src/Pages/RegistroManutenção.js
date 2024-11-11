@@ -5,6 +5,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import SelectDropdown from 'react-native-select-dropdown'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
+import * as Animatable from 'react-native-animatable';
 
 export default function RegistroManutencao({ handle }) {
 
@@ -106,12 +107,12 @@ export default function RegistroManutencao({ handle }) {
                     <TouchableOpacity onPress={() => handle(false)} style={styles.backButton}>
                         <MaterialCommunityIcons name="arrow-left" size={24} color="white" />
                     </TouchableOpacity>
-                    <Text style={styles.title}>Registro de Manutenção</Text>
+                    <Animatable.Text animation="fadeInUp" delay={25} style={styles.title}>Registro de Manutenção</Animatable.Text>
                 </View>
             )}
 
 {step === 1 && (
-            <View>
+            <Animatable.View animation="fadeInUp" delay={50}>
                 <Text style={styles.label}>Tipo da Manutenção</Text>
                 <SelectDropdown
                     data={tiposManutencao}
@@ -190,15 +191,13 @@ export default function RegistroManutencao({ handle }) {
                     style={styles.input}
                 />
 
-                
-            </View>
-        )}
-        {step === 1 && (
-            <TouchableOpacity style={styles.button} onPress={cadastrarManutencao}>
+<TouchableOpacity style={styles.button} onPress={cadastrarManutencao}>
                 <View style={styles.continueView}>
                     <Text style={styles.buttonText}>Cadastrar Manutenção</Text>
                 </View>
             </TouchableOpacity>
+                
+            </Animatable.View>
         )}
 
 

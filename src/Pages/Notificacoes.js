@@ -1,8 +1,13 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useFocusEffect } from '@react-navigation/native';
+import * as Animatable from 'react-native-animatable';
 
 export default function Notificacoes({ handle }) {
+
+  const [notificacoes, setNotificacoes] = useState([]);
+  const [detalhes, setDetalhesNotificacao] = useState(null);
 
   const notificationsData = {
     unread: [
@@ -52,17 +57,47 @@ export default function Notificacoes({ handle }) {
     ],
   };
 
+  async function getNotificacoes() {
+    await fetch(process.env.EXPO_PUBLIC_URL + '/api/Aviso/GetAllAvisos', {
+        method: 'GET',
+        headers: {
+            'content-type': 'application/json',
+        },
+    })
+        .then(res => res.json())
+        .then(json => setNotificacoes(json))
+        .catch(err => console.log('deu ruim'));
+}    
+useEffect(() => {
+  getNotificacoes();
+}, []);
+
+useFocusEffect(
+  React.useCallback(() => {
+      getNotificacoes();
+  }, [])
+);
 
 
+const [selectedNotification, setSelectedNotification] = useState(null);
+
+  const ExibirDetalhes = (notification) => {
+    setDetalhesNotificacao(notification);
+  };
+
+  // Função de renderização da notificação
   const renderNotification = ({ item }) => (
-    <View style={styles.notificationContainer}>
-      <View style={styles.notificationContent}>
-        <Text style={styles.senderText}>de: {item.sender}</Text>
-        <Text style={styles.titleText}>{item.title}</Text>
-        <Text style={styles.messageText}>{item.message}</Text>
-      </View>
+    <Animatable.View animation="fadeInUp" duration={750} style={styles.notificationContainer}>
+      <TouchableOpacity
+        onPress={() => ExibirDetalhes(item)}
+        style={styles.notificationContent}
+      >
+        <Text style={styles.senderText}>de: {item.usuario}</Text>
+        <Text style={styles.titleText}>{item.avisoTipo}</Text>
+        <Text style={styles.messageText}>{item.avisoConteudo}</Text>
+      </TouchableOpacity>
       <Icon name={item.icon} size={30} color={item.iconColor} style={styles.notificationIcon} />
-    </View>
+    </Animatable.View>
   );
 
   return (
@@ -85,10 +120,27 @@ export default function Notificacoes({ handle }) {
 
       <Text style={styles.sectionTitle}>NÃO LIDA:</Text>
       <FlatList
-        data={notificationsData.unread}
+        data={notificacoes}
         renderItem={renderNotification}
         keyExtractor={(item) => item.id}
       />
+
+{detalhes && (
+        <View style={styles.container}>
+          <Text style={styles.detailSenderText}>{detalhes.usuario}</Text>
+          <Text style={styles.detailTitleText}>{detalhes.avisoTipo}</Text>
+          <Text style={styles.detailMessageText}>{detalhes.avisoConteudo}</Text>
+
+          <View style={styles.detailButtons}>
+            <TouchableOpacity style={styles.detailButton}>
+              <Icon name="thumb-up" size={24} color="#FFD700" />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.detailButton}>
+              <Icon name="thumb-down" size={24} color="#FFD700" />
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
 
       <Text style={styles.sectionTitle}>VISTAS:</Text>
       <FlatList
@@ -112,6 +164,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginVertical: 20,
+    marginTop: 40
   },
   headerTitle: {
     color: '#FFFFFF',

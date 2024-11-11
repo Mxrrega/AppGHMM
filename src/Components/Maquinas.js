@@ -6,10 +6,10 @@ export default function Maquinas({item, onDelete, setor }) {
         setor == item.setorId &&
         <View style={styles.maquinaContainer}>
             <Image style={styles.image} source={{ uri: item.fotoUrl }} />
-            <Text style={styles.machineInfo}>Modelo: {item.modelo}</Text>
+            <Text style={styles.machineInfo}>Nome: {item.nome}</Text>
             <Text style={styles.machineInfo}>Número de Série: {item.numeroSerie}</Text>
-            <TouchableOpacity style={styles.deleteButton} onPress={onDelete}>
-                <Text style={styles.deleteButtonText}>Delete</Text>
+            <TouchableOpacity style={styles.detalhesButton} onPress={onDelete}>
+                <Text style={styles.detalhesButtonText}>Detalhes</Text>
             </TouchableOpacity>
         </View>
     );
@@ -32,14 +32,14 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         alignSelf: 'center',
     },
-    deleteButton: {
-        backgroundColor: '#FF6347',
+    detalhesButton: {
+        backgroundColor: '#696767',
         borderRadius: 10,
         paddingHorizontal: 20,
         paddingVertical: 5,
         marginTop: 10,
     },
-    deleteButtonText: {
+    detalhesButtonText: {
         color: '#FFFFFF',
         fontWeight: 'bold',
     },

@@ -5,6 +5,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import SelectDropdown from 'react-native-select-dropdown'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
+import * as Animatable from 'react-native-animatable';
 
 export default function CadastroMaquina({ handle }) {
 
@@ -148,8 +149,9 @@ export default function CadastroMaquina({ handle }) {
             <TouchableOpacity onPress={() => handle(false)} style={styles.backButton}>
               <MaterialCommunityIcons name="arrow-left" size={24} color="white" />
             </TouchableOpacity>
-            <Text style={styles.title}>Cadastrar Máquina</Text>
+            <Animatable.Text animation="fadeInUp" delay={25} style={styles.title}>Cadastrar Máquina</Animatable.Text>
           </View>
+          <Animatable.View animation="fadeInUp" delay={50}>
           <Text style={styles.label}>Nome Máquina</Text>
           <TextInput
             value={nomeMaquina}
@@ -181,11 +183,12 @@ export default function CadastroMaquina({ handle }) {
             placeholder="Digite a data de aquisição"
             style={styles.input}
           />
+          </Animatable.View>
         </View>
       )}
 
       {step === 2 && (
-        <View>
+        <Animatable.View animation="fadeInRight" duration={700}>
           <Text style={styles.label}>Foto da Máquina Url</Text>
           <TextInput
             value={fotoUrl}
@@ -220,11 +223,11 @@ export default function CadastroMaquina({ handle }) {
             keyboardType='default'
             style={styles.input}
           />
-        </View>
+        </Animatable.View>
       )}
 
       {step === 3 && (
-        <View>
+        <Animatable.View animation="fadeInRight" duration={700} >
           <Text style={styles.label}>Tipo da Maquina</Text>
           <SelectDropdown
             data={tiposMaquina}
@@ -306,7 +309,7 @@ export default function CadastroMaquina({ handle }) {
             dropdownStyle={styles.dropdownMenuStyle}
           />
 
-        </View>
+        </Animatable.View>
       )}
 
       {step === 4 && (
@@ -326,12 +329,14 @@ export default function CadastroMaquina({ handle }) {
       )}
 
       {step < 3 && (
+        <Animatable.View animation="fadeInUp" delay={50}>
         <TouchableOpacity style={styles.button} onPress={handleContinue}>
           <View style={styles.continueView}>
             <Text style={styles.buttonText}>Continuar</Text>
             <MaterialCommunityIcons name="chevron-right" size={24} color="white" />
           </View>
         </TouchableOpacity>
+        </Animatable.View>
       )}
 
       {step === 3 && (

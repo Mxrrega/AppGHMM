@@ -97,12 +97,12 @@ export default function Home() {
                 <Text style={styles.greetingText}>{greeting}</Text>
                 <View style={styles.headerIcons}>
                 <TouchableOpacity onPress={ExibirQRcode}>
-                    <Animatable.View animation="pulse" iterationCount="infinite" iterationDelay={3000}>
+                    <Animatable.View animation="bounceIn" duration={2000}>
                         <MaterialCommunityIcons name="qrcode-scan" size={24} color="white" style={styles.iconSpacing} />
                     </Animatable.View>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={ExibirMenu}>
-                        <Animatable.View animation="bounceIn" duration={1500}>
+                        <Animatable.View animation="bounceIn" duration={2000}>
                             <MaterialCommunityIcons name="menu" size={24} color="white" style={styles.iconSpacing} />
                         </Animatable.View>
                     </TouchableOpacity>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import * as Animatable from 'react-native-animatable';
 
 export default function Conta({handle})  {
 
@@ -25,10 +26,10 @@ export default function Conta({handle})  {
         <TouchableOpacity onPress={() => handle(false)}  style={styles.backButton}>
         <MaterialCommunityIcons name="arrow-left" size={24} color="white" />
       </TouchableOpacity>
-      <Text style={styles.title}>Conta</Text>
+      <Animatable.Text animation="fadeInUp" delay={25} style={styles.title}>Conta</Animatable.Text>
       </View>
 
-      <View style={styles.profileContainer}>
+      <Animatable.View animation="fadeInUp" delay={50} style={styles.profileContainer}>
         <Image
           source={{ uri: userData.photoUrl }}
           style={styles.profileImage}
@@ -37,9 +38,9 @@ export default function Conta({handle})  {
           <Text style={styles.name}>{userData.name}</Text>
           <Text style={styles.birthDate}>{userData.birthDate} ({userData.age} anos)</Text>
         </View>
-      </View>
+      </Animatable.View>
 
-      <View style={styles.box}>
+      <Animatable.View animation="fadeInUp" delay={50} style={styles.box}>
       <View style={styles.field}>
         <Text style={styles.fieldLabel}>Email</Text>
         <View style={styles.fieldValueContainer}>
@@ -95,7 +96,7 @@ export default function Conta({handle})  {
           <Icon name="lock" size={20} color="#B41D1D" />
         </View>
       </View>
-      </View>
+      </Animatable.View>
     </ScrollView>
   );
 };
