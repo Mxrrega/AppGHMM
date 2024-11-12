@@ -60,27 +60,17 @@ export default function Notificacoes({ handle }) {
         .catch(err => console.log('deu ruim'));
   }
 
-  async function getUsuario() {
-    await fetch(`${process.env.EXPO_PUBLIC_URL}/api/Usuario/GetUsuarioById/${notificacoes.usuarioId}`, {
-      method: 'GET',
-      headers: {
-          'content-type': 'application/json',
-      },
-  })
-      .then(res => res.json())
-      .then(json => console.log(json))
-      .catch(err => console.log('deu ruim'));
-  }
+
 
   useEffect(() => {
     getNotificacoes();
-    getUsuario()
+
   }, []);
 
   useFocusEffect(
     React.useCallback(() => {
       getNotificacoes();
-      getUsuario()
+
     }, [])
   );
 
@@ -99,7 +89,7 @@ export default function Notificacoes({ handle }) {
         onPress={() => ExibirDetalhes(item)}
         style={styles.notificationContent}
       >
-        <Text style={styles.senderText}>de: {item.usuarioId}</Text>
+        <Text style={styles.senderText}>de: {item.usuario.usuarioNome}</Text>
         <Text style={styles.titleText}>{item.avisoTipo}</Text>
         <Text style={styles.messageText}>{item.avisoConteudo}</Text>
       </TouchableOpacity>

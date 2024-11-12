@@ -54,8 +54,8 @@ export default function Rotas() {
                     }}
                 />
                 <Tab.Screen
-                    name="Qrcode"
-                    component={Qrcode}
+                    name="Notificacoes"
+                    component={Notificacoes}
                     options={{
                         tabBarIcon: ({ color, size }) => (
                             <MaterialCommunityIcons name="magnify" color={color} size={size} />
