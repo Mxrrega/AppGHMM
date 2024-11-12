@@ -9,8 +9,6 @@ export default function QRCodeScanner({ handle }) {
   const [scanned, setScanned] = useState(false);
   const [loading, setLoading] = useState(false);
   const [maquina, setMaquina] = useState(null);
-  const [tipoMaquinaNome, setTipoMaquinaNome ] = useState(null);
-  const [tipoMaquina, setTipoMaquina] = useState([]);
 
   /*useEffect(() => {
     const getBarCodeScannerPermissions = async () => {
@@ -35,30 +33,8 @@ export default function QRCodeScanner({ handle }) {
       .then(json => setMaquina(json))
       .catch(err => console.error('Erro ao carregar máquina:', err))
       .finally(() => setLoading(false));
-      
-
-      
 
   };
-
-  async function getTipoMaquina()
-  {
-    await fetch(`${process.env.EXPO_PUBLIC_URL}/api/TipoMaquina/GetTipoMaquinaById/${maquina.tipoMaquinaId}`, {
-      method: 'GET',
-      headers: {
-        'content-Type': 'application/json',
-      },
-    })
-      .then(res => res.json())
-      .then(json => setTipoMaquinaNome( json.tipoMaquinaNome ) )
-      .catch(err => console.error('Erro ao carregar Tipo de Máquina:', err))
-  }
-
-  useEffect( () => {
-    if( maquina ) {
-      getTipoMaquina();
-    }
-  }, [maquina])
 
   if (hasPermission === false) {
     return <Text>Permissão de câmera negada</Text>;
@@ -95,12 +71,12 @@ export default function QRCodeScanner({ handle }) {
           <Text style={styles.value}>{maquina.nome}</Text>
         </View>
         <View style={styles.infoBox}>
-          <Text style={styles.label}>Tipo de Máquina ID:</Text>
-          <Text style={styles.value}>{tipoMaquinaNome}</Text>
+          <Text style={styles.label}>Tipo de Máquina:</Text>
+          <Text style={styles.value}>{maquina.tipoMaquina.tipoMaquinaNome}</Text>
         </View>
         <View style={styles.infoBox}>
-          <Text style={styles.label}>Setor ID:</Text>
-          <Text style={styles.value}>{maquina.setorId}</Text>
+          <Text style={styles.label}>Setor:</Text>
+          <Text style={styles.value}>{maquina.setor.setorNome}</Text>
         </View>
         <View style={styles.infoBox}>
           <Text style={styles.label}>Modelo:</Text>
@@ -111,8 +87,8 @@ export default function QRCodeScanner({ handle }) {
           <Text style={styles.value}>{maquina.numeroSerie}</Text>
         </View>
         <View style={styles.infoBox}>
-          <Text style={styles.label}>Fabricante ID:</Text>
-          <Text style={styles.value}>{maquina.fabricanteId}</Text>
+          <Text style={styles.label}>Fabricante:</Text>
+          <Text style={styles.value}>{maquina.fabricante.fabricanteNome}</Text>
         </View>
         <View style={styles.infoBox}>
           <Text style={styles.label}>Data de Aquisição:</Text>
