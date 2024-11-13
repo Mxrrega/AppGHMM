@@ -1,14 +1,14 @@
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import React from 'react';
 
-export default function Maquinas({item, onDelete, setor }) {
+export default function Maquinas({item, onDetail, setor }) {
     return (
         setor == item.setorId &&
         <View style={styles.maquinaContainer}>
             <Image style={styles.image} source={{ uri: item.fotoUrl }} />
             <Text style={styles.machineInfo}>Nome: {item.nome}</Text>
             <Text style={styles.machineInfo}>Número de Série: {item.numeroSerie}</Text>
-            <TouchableOpacity style={styles.detalhesButton} onPress={onDelete}>
+            <TouchableOpacity style={styles.detalhesButton} onPress={onDetail}>
                 <Text style={styles.detalhesButtonText}>Detalhes</Text>
             </TouchableOpacity>
         </View>

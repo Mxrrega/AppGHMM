@@ -87,7 +87,12 @@ export default function CadastroMaquina({ handle }) {
       Alert.alert('Erro', 'A data de aquisição está inválida. Use o formato DD/MM/YYYY.');
       return;
     }
-
+  
+    if (!modelo || !nomeMaquina || !numeroSerie || !fabricanteId || !tipoMaquinaId || !setorId || !dataAquisicao || !fotoUrl || !peso || !voltagem || !detalhes) {
+      Alert.alert('Erro', 'Por favor, preencha todos os campos obrigatórios.');
+      return;
+    }
+  
     const maquina = {
       modelo,
       nomeMaquina,
@@ -101,20 +106,20 @@ export default function CadastroMaquina({ handle }) {
       voltagem,
       detalhes
     };
-
+  
     console.log('Máquina a ser cadastrada:', maquina);
-
-    await fetch(process.env.EXPO_PUBLIC_URL + '/api/Maquina/CreateMaquina', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify(
-        {
+  
+    try {
+      const response = await fetch(process.env.EXPO_PUBLIC_URL + '/api/Maquina/CreateMaquina', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
           nome: nomeMaquina,
           modelo: modelo,
           numeroSerie: numeroSerie,
-          dataAquisicao :  moment(dataAquisicao, 'DD/MM/YYYY').format('YYYY-MM-DD') ,
+          dataAquisicao: moment(dataAquisicao, 'DD/MM/YYYY').format('YYYY-MM-DD'),
           fotoUrl: fotoUrl,
           peso: peso,
           voltagem: voltagem,
@@ -122,14 +127,24 @@ export default function CadastroMaquina({ handle }) {
           tipoMaquinaId: tipoMaquinaId,
           setorId: setorId,
           fabricanteId: fabricanteId
-        }
-      )
-    })
-      .then(res => res.json())
-      .then(json => console.log(json))
-      .catch(err => console.error('Erro ao cadastrar a máquina. Código de status:', err));
-      setSucesso(true)
-
+        })
+      });
+  
+      const json = await response.json();
+  
+      if (response.ok) {
+        console.log('Máquina cadastrada com sucesso:', json);
+        setSucesso(true); 
+      } else {
+        console.error('Erro ao cadastrar a máquina. Código de status:', response.status);
+        Alert.alert('Erro', 'Não foi possível cadastrar a máquina. Tente novamente.');
+        setSucesso(false); 
+      }
+    } catch (error) {
+      console.error('Erro ao cadastrar a máquina:', error);
+      Alert.alert('Erro', 'Ocorreu um erro ao cadastrar a máquina. Tente novamente.');
+      setSucesso(false); 
+    }
   }
 
   return (

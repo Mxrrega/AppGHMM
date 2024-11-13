@@ -9,91 +9,64 @@ export default function Notificacoes({ handle }) {
   const [step, setStep] = useState(1);
   const [notificacoes, setNotificacoes] = useState([]);
   const [detalhes, setDetalhesNotificacao] = useState(null);
-  const [nomeusuario, setUsuario] = useState([]);
-
-  const handleContinue = () => {
-    if (step < 4) setStep(step + 1);
-  };
-
-  const handleBack = () => {
-    if (step > 1) setStep(step - 1);
-  };
-
-  const notificationsData = {
-    read: [
-      {
-        id: '3',
-        sender: 'Filipo Creatino',
-        title: 'Atualização Concluída',
-        message: 'A máquina de corte foi atualizada com o software mais recente. Verifique as novas funcionalidades.',
-        icon: 'check-circle',
-        iconColor: '#32CD32',
-      },
-      {
-        id: '4',
-        sender: 'Adalberto Quinzé',
-        title: 'Chamada de Atenção',
-        message: 'A pressão na máquina de injeção ultrapassou o limite seguro. Equipe técnica já foi notificada.',
-        icon: 'check-circle',
-        iconColor: '#32CD32',
-      },
-      {
-        id: '5',
-        sender: 'Adalberto Quinzé',
-        title: 'Peça Substituída',
-        message: 'A correia transportadora foi trocada e está pronta para uso.',
-        icon: 'check-circle',
-        iconColor: '#32CD32',
-      },
-    ],
-  };
+  const [selectedNotification, setSelectedNotification] = useState(null);
 
   async function getNotificacoes() {
-    await fetch(process.env.EXPO_PUBLIC_URL + '/api/Aviso/GetAllAvisos', {
+
+      await fetch(process.env.EXPO_PUBLIC_URL + '/api/Aviso/GetAllAvisos', {
         method: 'GET',
-        headers: {
-            'content-type': 'application/json',
+        headers: { 
+          'content-type': 'application/json' 
         },
-    })
-        .then(res => res.json())
-        .then(json => setNotificacoes(json))
-        .catch(err => console.log('deu ruim'));
-  }
+      })
+      .then(res => res.json())
+      .then(json => setNotificacoes(json))
+      .catch(err => console.error('Erro ao buscar notificações:', err));
 
-
+  };
 
   useEffect(() => {
     getNotificacoes();
-
   }, []);
 
   useFocusEffect(
     React.useCallback(() => {
       getNotificacoes();
-
     }, [])
   );
 
-  const [selectedNotification, setSelectedNotification] = useState(null);
+  async function ExibirDetalhes(notification) {
 
-  const ExibirDetalhes = (notification) => {
-    setDetalhesNotificacao(notification);
-    handleContinue();
-  };
+      await fetch(`${process.env.EXPO_PUBLIC_URL}/api/Aviso/UpdateAviso/${notification.avisoId}`, {
+        method: 'PUT',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          avisoConteudo: notification.avisoConteudo,
+          avisoVisto: true, 
+          usuarioId: notification.usuario.usuarioId,
+          avisoTipoId: notification.avisoTipo.avisoTipoId
+        })
+      })
+      .then( res => res.json() )
+      .then( json => {
+        getNotificacoes();
+        setDetalhesNotificacao(notification);
+        setStep(2);
+      })
+      .catch( (error) => console.log( error ) );
+  }
 
-  const unreadCount = notificacoes.length;
+  const notificacoesNaoLidas = notificacoes.filter(item => item.avisoVisto == false );
+  const notificacoesLidas = notificacoes.filter(item => item.avisoVisto == true );
 
   const renderNotification = ({ item }) => (
     <Animatable.View animation="fadeInUp" duration={750} style={styles.notificationContainer}>
-      <TouchableOpacity
-        onPress={() => ExibirDetalhes(item)}
-        style={styles.notificationContent}
-      >
-        <Text style={styles.senderText}>de: {item.usuario.usuarioNome}</Text>
-        <Text style={styles.titleText}>{item.avisoTipo}</Text>
+      <TouchableOpacity onPress={() => ExibirDetalhes(item)} style={styles.notificationContent}>
+        <Text style={styles.senderText}>de: {item.usuario?.usuarioNome || 'Usuário desconhecido'}</Text>
+        <Text style={styles.titleText}>{item.avisoTipo?.avisoTipoNome || 'Tipo não especificado'}</Text>
         <Text style={styles.messageText}>{item.avisoConteudo}</Text>
       </TouchableOpacity>
-      <Icon name={item.icon} size={30} color={item.iconColor} style={styles.notificationIcon} />
+      <Icon name={item.avisoVisto ? 'check-circle' : 'alert-circle'} size={30} color={item.avisoVisto ? '#32CD32' : '#8D0000'} style={styles.notificationIcon} />
     </Animatable.View>
   );
 
@@ -105,14 +78,12 @@ export default function Notificacoes({ handle }) {
             <TouchableOpacity onPress={() => handle(false)} style={styles.iconButton}>
               <Icon name="arrow-left" size={24} color="#FFFFFF" />
             </TouchableOpacity>
-            
-            <View style={styles.notificationCountContainer}>
+            <View style={styles.headerTitleContainer}>
               <Text style={styles.headerTitle}>Notificações</Text>
               <View style={styles.notificationCountBox}>
-                <Text style={styles.notificationCountText}>{unreadCount}</Text>
+                <Text style={styles.notificationCountText}>{notificacoesNaoLidas.length}</Text>
               </View>
             </View>
-            
             <TouchableOpacity style={styles.iconButton}>
               <Icon name="plus" size={24} color="#FFFFFF" />
             </TouchableOpacity>
@@ -120,39 +91,32 @@ export default function Notificacoes({ handle }) {
 
           <Text style={styles.sectionTitle}>NÃO LIDA:</Text>
           <FlatList
-            data={notificacoes}
+            data={notificacoesNaoLidas}
             renderItem={renderNotification}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item.avisoId.toString()}
           />
 
           <Text style={styles.sectionTitle}>VISTAS:</Text>
           <FlatList
-            data={notificationsData.read}
+            data={notificacoesLidas}
             renderItem={renderNotification}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item.avisoId.toString()}
           />
         </View>
       )}
 
-      {step === 2 && (
+      {step === 2 && detalhes && (
         <View style={styles.containerNot}>
-          <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+          <View style={styles.headerDetalhes}> 
+          <TouchableOpacity onPress={() => setStep(1)} style={styles.iconButton}>
             <Icon name="arrow-left" size={24} color="white" />
           </TouchableOpacity>
-          <Text style={styles.title}>Não Lida</Text>
+          <Text style={styles.title}>Detalhes da Notificação</Text>
+          </View>
           <View style={styles.notificationBox}>
-            <Text style={styles.senderText}>{detalhes.usuarioNome}</Text>
-            <Text style={styles.messageText}>{detalhes.avisoTipo}</Text>
+            <Text style={styles.senderText}>{detalhes.usuario?.usuarioNome || 'Usuário desconhecido'}</Text>
+            <Text style={styles.messageText}>{detalhes.avisoTipo?.avisoTipoNome || 'Tipo não especificado'}</Text>
             <Text style={styles.messageText}>{detalhes.avisoConteudo}</Text>
-
-            <View style={styles.buttonsContainer}>
-              <TouchableOpacity style={styles.detailButton}>
-                <Icon name="thumb-up" size={24} color="#FFD700" />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.detailButton}>
-                <Icon name="thumb-down" size={24} color="#FFD700" />
-              </TouchableOpacity>
-            </View>
           </View>
         </View>
       )}
@@ -173,22 +137,23 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     marginTop: 40,
   },
+  headerTitleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   headerTitle: {
     color: '#FFFFFF',
     fontSize: 20,
     fontWeight: 'bold',
-  },
-  notificationCountContainer: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    textAlign: 'center',
   },
   notificationCountBox: {
     borderRadius: 100,
     paddingHorizontal: 8,
     paddingVertical: 2,
     backgroundColor: '#B22222',
+    marginLeft: 8,
   },
   notificationCountText: {
     color: '#FFFFFF',
@@ -235,13 +200,6 @@ const styles = StyleSheet.create({
   containerNot: {
     flex: 1,
     backgroundColor: '#1C1C1E',
-    padding: 16,
-  },
-  backButton: {
-    position: 'absolute',
-    top: 16,
-    left: 16,
-    padding: 8,
   },
   title: {
     color: '#FFFFFF',
@@ -249,6 +207,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginVertical: 20,
+    marginLeft: 10
   },
   notificationBox: {
     borderWidth: 1,
@@ -258,15 +217,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#2C2C2E',
     alignItems: 'center',
   },
-  buttonsContainer: {
+  headerDetalhes: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '60%',
-    marginTop: 16,
-  },
-  button: {
-    padding: 8,
-    borderRadius: 8,
-    backgroundColor: '#3C3C3E',
+    alignItems: 'center',
+    marginVertical: 20,
+    marginTop: 40,
   },
 });

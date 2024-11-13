@@ -7,7 +7,6 @@ import { AuthContext } from '../Context/AuthContext';
 import HomeUsuario from '../Pages/HomeUsuario';
 import LoginScreen from '../Pages/Login';
 import CadastroMaquina from '../Pages/CadastroMaquina';
-import Cadastro from '../Pages/Cadastro';
 import Busca from '../Pages/Busca';
 import Login from '../Pages/Login';
 import Notificacoes from '../Pages/Notificacoes';
@@ -47,15 +46,6 @@ export default function Rotas() {
                 <Tab.Screen
                     name="Buscar"
                     component={Busca}
-                    options={{
-                        tabBarIcon: ({ color, size }) => (
-                            <MaterialCommunityIcons name="magnify" color={color} size={size} />
-                        ),
-                    }}
-                />
-                <Tab.Screen
-                    name="Notificacoes"
-                    component={Notificacoes}
                     options={{
                         tabBarIcon: ({ color, size }) => (
                             <MaterialCommunityIcons name="magnify" color={color} size={size} />

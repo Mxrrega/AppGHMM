@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, SectionList, FlatList, TouchableOpacity , ScrollView} from 'react-native';
+import { View, Text, StyleSheet, SectionList, FlatList, TouchableOpacity, ScrollView } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Maquinas from '../Components/Maquinas';
 import { useFocusEffect } from '@react-navigation/native';
 import * as Animatable from 'react-native-animatable';
 import Menu from './Menu';
 import QRCode from './Qrcode';
+import DetalhesMaquina from '../Components/DetalhesMaquina';
 
 export default function Home() {
     const [maquinas, setMaquinas] = useState([]);
     const [setores, setSetores] = useState([]);
     const [error, setError] = useState(false);
     const [greeting, setGreeting] = useState('');
+    const [maquinaDetalhes, setMaquinaDetalhes] = useState('');
+    const [maquinaDetalhesExibir, setMaquinaDetalhesExibir] = useState(false);
     const [menu, setMenu] = useState(false);
     const [qrcode, setQrCode] = useState(false);
 
@@ -24,7 +27,7 @@ export default function Home() {
         })
             .then(res => res.json())
             .then(json => setMaquinas(json))
-            .catch(err => setError(true));
+            .catch(err => console.log(err));
     }
 
     async function getSetores() {
@@ -39,16 +42,22 @@ export default function Home() {
             .catch(err => setError(true));
     }
 
-    async function deleteMaquina(maquinaId) {
-        try {
-            await fetch(process.env.EXPO_PUBLIC_URL + `/api/Maquina/DeleteMaquina/${maquinaId}`, {
-                method: 'DELETE',
-            });
-            setMaquinas(maquinas.filter(maquina => maquina.maquinaId !== maquinaId));
-        } catch (err) {
-            console.error('Erro ao deletar máquina:', err);
-        }
-    }
+    async function detalhesMaquina(item) {
+        console.log(item)
+            await fetch(process.env.EXPO_PUBLIC_URL + `/api/Maquina/GetMaquinaByIdCompleto/${item}`, {
+                method: 'GET',
+                headers: {
+                    'content-type': 'application/json'
+                  }
+            })
+            .then(res => res.json())
+            .then(json => setMaquinaDetalhes(json))
+            .then(json => setMaquinaDetalhesExibir(true))
+            .catch(err => console.log('Erro ao pegar detalhes da máquina', err));
+            }
+            
+
+    
 
     const updateGreeting = () => {
         const currentHour = new Date().getHours();
@@ -73,6 +82,14 @@ export default function Home() {
         }, [])
     );
 
+    if (maquinaDetalhesExibir === true) {
+        return (
+            <Animatable.View animation="slideInRight" duration={500} style={styles.menuContainer}>
+                <DetalhesMaquina maquinaDetalhes={maquinaDetalhes} handle={setMaquinaDetalhesExibir} />
+            </Animatable.View>
+        );
+    }
+
     if (menu === true) {
         return <Animatable.View animation="slideInRight" duration={500} style={styles.menuContainer}>
             <Menu handle={setMenu} />
@@ -96,10 +113,10 @@ export default function Home() {
             <Animatable.View animation="slideInDown" duration={800} style={styles.subHeader}>
                 <Text style={styles.greetingText}>{greeting}</Text>
                 <View style={styles.headerIcons}>
-                <TouchableOpacity onPress={ExibirQRcode}>
-                    <Animatable.View animation="bounceIn" duration={2000}>
-                        <MaterialCommunityIcons name="qrcode-scan" size={24} color="white" style={styles.iconSpacing} />
-                    </Animatable.View>
+                    <TouchableOpacity onPress={ExibirQRcode}>
+                        <Animatable.View animation="bounceIn" duration={2000}>
+                            <MaterialCommunityIcons name="qrcode-scan" size={24} color="white" style={styles.iconSpacing} />
+                        </Animatable.View>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={ExibirMenu}>
                         <Animatable.View animation="bounceIn" duration={2000}>
@@ -114,27 +131,32 @@ export default function Home() {
             ) : (
                 maquinas && setores &&
                 setores.map((setor) => {
-                    return (
-                        <View key={setor.setorId}>
-                            <Animatable.Text animation="fadeIn" delay={400} style={styles.setorHeader}>
-                                {setor.setorNome}
-                            </Animatable.Text>
-                            <FlatList
-                                data={maquinas}
-                                horizontal={true}
-                                keyExtractor={(item) => item.maquinaId}
-                                renderItem={({item}) => 
-                                    <Animatable.View animation="fadeInRight" delay={400} style={styles.box}>
-                                        <Maquinas
-                                            setor={setor.setorId}
-                                            item={item}
-                                            onDelete={() => deleteMaquina(item.maquinaId)}
-                                        />
-                                    </Animatable.View>
-                                }
-                            />
-                        </View>
-                    )
+                    let empty = maquinas.filter(maquina => maquina.setorId == setor.setorId);
+                    if (empty.length > 0) {
+                        return (
+
+                            <View key={setor.setorId}>
+                                <Animatable.Text animation="fadeIn" delay={400} style={styles.setorHeader}>
+                                    {setor.setorNome}
+                                </Animatable.Text>
+                                <FlatList
+                                    data={maquinas}
+                                    horizontal={true}
+                                    keyExtractor={(item) => item.maquinaId}
+                                    renderItem={({ item }) =>
+                                        <Animatable.View animation="fadeInRight" delay={400} style={styles.box}>
+                                            <Maquinas
+                                                setor={setor.setorId}
+                                                item={item}
+                                                onDetail={() => detalhesMaquina(item.maquinaId)}
+                                            />
+                                        </Animatable.View>
+                                    }
+                                />
+                            </View>
+
+                        )
+                    }
                 })
             )}
         </ScrollView>
