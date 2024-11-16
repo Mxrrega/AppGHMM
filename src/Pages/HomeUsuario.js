@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, SectionList, FlatList, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, SectionList, FlatList, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Maquinas from '../Components/Maquinas';
 import { useFocusEffect } from '@react-navigation/native';
@@ -17,6 +17,8 @@ export default function Home() {
     const [maquinaDetalhesExibir, setMaquinaDetalhesExibir] = useState(false);
     const [menu, setMenu] = useState(false);
     const [qrcode, setQrCode] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
+    
 
     async function getMaquinas() {
         await fetch(process.env.EXPO_PUBLIC_URL + '/api/Maquina/GetAllMaquinas', {
@@ -70,6 +72,12 @@ export default function Home() {
         }
     };
 
+    const onRefresh = async () => {
+        setRefreshing(true);
+        await Promise.all([getMaquinas(), getSetores()]);
+        setRefreshing(false);
+    };
+
     useEffect(() => {
         getMaquinas();
         updateGreeting();
@@ -109,7 +117,10 @@ export default function Home() {
     }
 
     return (
-        <ScrollView style={styles.container}>
+        <ScrollView style={styles.container}
+        refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }>
             <Animatable.View animation="slideInDown" duration={800} style={styles.subHeader}>
                 <Text style={styles.greetingText}>{greeting}</Text>
                 <View style={styles.headerIcons}>

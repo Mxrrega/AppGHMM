@@ -57,7 +57,7 @@ export default function Login() {
     carregarDados();
   }, []);
 
-  /*async function Cadastrar() {
+  async function Cadastrar() {
 
     if (!moment(dataNascimento, 'DD/MM/YYYY', true).isValid()) {
       Alert.alert('Erro', 'A data de nascimento está inválida. Use o formato DD/MM/YYYY.');
@@ -95,7 +95,7 @@ export default function Login() {
       .then(json => (json ? console.log('Erro') : setSucesso(true)))
       .catch(err => console.error('Erro ao cadastrar o usuário. Código de status:', err));
       
-  }*/
+  }
 
 
   function RealizaLogin() {
@@ -123,10 +123,6 @@ export default function Login() {
 
   if (sucesso === true) {
     handleContinue();
-  }
-
-  async function Cadastrar() {
-    setSucesso(true)
   }
 
   const VerSenha = () => {
