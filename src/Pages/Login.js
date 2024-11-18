@@ -5,6 +5,8 @@ import { AuthContext } from '../Context/AuthContext';
 import * as Animatable from 'react-native-animatable';
 import SelectDropdown from 'react-native-select-dropdown';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import moment from 'moment';
+
 
 export default function Login() {
 
@@ -53,6 +55,7 @@ export default function Login() {
         .then(json => setSetores(json))
         .catch(err => console.error('Erro ao carregar setores:', err));
   }
+
   useEffect(() => {
     carregarDados();
   }, []);
@@ -63,38 +66,40 @@ export default function Login() {
       Alert.alert('Erro', 'A data de nascimento está inválida. Use o formato DD/MM/YYYY.');
       return;
     }
-
-    const dados = {
-      nome, cpf, email, telefone, dataNascimento, escolaridade, urlFoto, senha
-    };
-
-    console.log('Dados enviados:', dados);
-
-    await fetch(process.env.EXPO_PUBLIC_URL + '/api/Usuario/CreateUsuario', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify(
-        {
+  
+    try {
+      const response = await fetch(process.env.EXPO_PUBLIC_URL + '/api/Usuario/CreateUsuario', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
           usuarioNome: nome,
-          usuarioCpf: cpf,
-          usuarioEmail: email,
-          usuarioTelefone : telefone,
+          usuarioCpf: cpfCadastro,
+          usuarioEmail: emailCadastro,
+          usuarioTelefone: telefone,
           usuarioDataNascimento: moment(dataNascimento, 'DD/MM/YYYY').format('YYYY-MM-DD'),
           usuarioEscolaridade: escolaridade,
-          urlFofotoUrlto: urlFoto,
-          usuarioSenha: senha,
+          fotoUrl: urlFoto,
+          usuarioSenha: senhaCadastro,
           cargoId: cargoId,
           setorId: setorId,
-        }
-      )
-    })
-      .then(res => res.json())
-      .then(json => console.log(json))
-      .then(json => (json ? console.log('Erro') : setSucesso(true)))
-      .catch(err => console.error('Erro ao cadastrar o usuário. Código de status:', err));
-      
+        }),
+      });
+  
+      const json = await response.json();
+  
+      if (response.ok) {
+        console.log('Usuário cadastrado com sucesso:', json);
+        handleContinue();
+      } else {
+        console.error('Erro no cadastro:', json);
+        Alert.alert('Erro', json.message || 'Falha ao cadastrar o usuário.');
+      }
+    } catch (error) {
+      console.error('Erro ao cadastrar o usuário:', error);
+      Alert.alert('Erro', 'Ocorreu um erro ao cadastrar o usuário. Tente novamente mais tarde.');
+    }
   }
 
 
@@ -112,12 +117,25 @@ export default function Login() {
   }
 
   const handleContinue = () => {
-    if (step < 4) setStep(step + 1);
+    if (step < 5) setStep(step + 1);
   };
 
   const handleBack = () => {
     if (step > 1) setStep(step - 1);
   };
+
+  const handleBackLogin = () => {
+    if (step > 4) {
+      setStep(1);
+    }
+  };
+
+  useEffect(() => {
+    if (step === 1) {
+      setStep(1);
+
+    }
+  }, [step]);
 
 
 
@@ -379,7 +397,7 @@ export default function Login() {
               </View>
               <TouchableOpacity
                 style={styles.buttonCadastro}
-                onPress={() => handle(false)}
+                onPress={handleBackLogin}
               >
                 <Text style={styles.buttonText}>
                   Continuar
