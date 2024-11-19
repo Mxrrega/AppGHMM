@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, Text, FlatList, StyleSheet } from 'react-native';
+import { View, TextInput, Text, FlatList, StyleSheet, Image } from 'react-native';
 
 export default function Buscar() {
 
@@ -14,7 +14,7 @@ export default function Buscar() {
     }
 
     try {
-      const response = await fetch(`http://10.139.75.33/api/Maquina/GetAllMaquinas`, {
+      const response = await fetch(process.env.EXPO_PUBLIC_URL + '/api/Maquina/GetAllMaquinas', {
         method: 'GET',
         headers: {
           'content-type': 'application/json',
@@ -23,7 +23,7 @@ export default function Buscar() {
       const data = await response.json();
       
       const filteredMachines = data.filter(machine =>
-        machine.name.toLowerCase().includes(searchText.toLowerCase())
+        machine.nome.includes(searchText)
       );
 
       setMachines(filteredMachines);
@@ -36,7 +36,9 @@ export default function Buscar() {
 
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
-      <Text style={styles.itemText}>{item.name}</Text>
+      <Image style={styles.image} source={{ uri: item.fotoUrl }} />
+      <Text style={styles.itemText}>{item.nome}</Text>
+      
     </View>
   );
 
@@ -59,7 +61,7 @@ export default function Buscar() {
 
       <FlatList
         data={machines}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => item.maquinaId}
         renderItem={renderItem}
         ListEmptyComponent={<Text style={styles.emptyText}>Nenhuma máquina encontrada</Text>}
       />
@@ -98,10 +100,21 @@ const styles = StyleSheet.create({
     backgroundColor: '#444',
     padding: 16,
     borderRadius: 8,
+    marginBottom: 16,
+    marginHorizontal: 16, 
+    alignItems: 'center', 
+  },
+  image: {
+    width: 200, 
+    height: 200,
     marginBottom: 8,
+    borderRadius: 8,
   },
   itemText: {
     color: '#fff',
+    textAlign: 'center', 
+    fontSize: 16,
+    marginTop: 4,
   },
   emptyText: {
     color: '#aaa',
