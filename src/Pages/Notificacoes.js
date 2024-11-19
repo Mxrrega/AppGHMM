@@ -16,10 +16,12 @@ export default function Notificacoes({ handle }) {
   const [usuarioId, setUsuarioId ] = useState([]);
   const [avisoTipoId, setAvisoTipoId ] = useState([]);
 
-  const [usuario, setUsuario ] = useState([]);
-  const [avisoTipo, setAvisoTipo ] = useState([]);
+  const [usuarios, setUsuarios ] = useState([]);
+  const [avisoTipos, setAvisoTipos ] = useState([]);
 
-  
+  const handleContinue = () => {
+    if (step < 5) setStep(step + 1);
+  };
 
   async function getNotificacoes() {
 
@@ -44,7 +46,7 @@ export default function Notificacoes({ handle }) {
       },
     })
       .then(res => res.json())
-      .then(json => setUsuario(json))
+      .then(json => setUsuarios(json))
       .catch(err => console.error('Erro ao carregar usuarios:', err));
 
       await fetch(process.env.EXPO_PUBLIC_URL + '/api/AvisoTipo/GetAllAvisoTipos', {
@@ -54,7 +56,7 @@ export default function Notificacoes({ handle }) {
         },
       })
         .then(res => res.json())
-        .then(json => setAvisoTipo(json))
+        .then(json => setAvisoTipos(json))
         .catch(err => console.error('Erro ao carregar tipo de aviso:', err));
   }
 
@@ -70,18 +72,24 @@ export default function Notificacoes({ handle }) {
     }, [])
   );
 
+  useEffect(() => {
+    if (step === 4) {
+      setStep(4);
+    }
+  }, [step]);
+
   async function ExibirDetalhes(notification) {
 
-      await fetch(`${process.env.EXPO_PUBLIC_URL}/api/Aviso/UpdateAviso/${notification.avisoId}`, {
-        method: 'PUT',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          avisoConteudo: notification.avisoConteudo,
-          avisoVisto: true, 
-          usuarioId: notification.usuario.usuarioId,
-          avisoTipoId: notification.avisoTipo.avisoTipoId
-        })
+    await fetch(`${process.env.EXPO_PUBLIC_URL}/api/Aviso/UpdateAviso/${notification.avisoId}`, {
+      method: 'PUT',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        avisoConteudo: notification.avisoConteudo,
+        avisoVisto: true, 
+        usuarioId: notification.usuario.usuarioId,
+        avisoTipoId: notification.avisoTipo.avisoTipoId
       })
+    })
       .then( res => res.json() )
       .then( json => {
         getNotificacoes();
@@ -92,7 +100,31 @@ export default function Notificacoes({ handle }) {
   }
 
   async function cadastroNotificacao() {
-    
+    try {
+      const response = await fetch(process.env.EXPO_PUBLIC_URL + '/api/Aviso/CreateAviso', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 
+      },
+      body: JSON.stringify({
+        avisoConteudo: avisoConteudo,
+        avisoVisto: false, 
+        usuarioId: usuarioId,
+        avisoTipoId: avisoTipoId
+      })
+    })
+    const json = await response.json();
+  
+      if (response.ok) {
+        console.log('Notificação cadastrado com sucesso:', json);
+        handleContinue();
+      } else {
+        console.error('Erro no cadastro da notificação:', json);
+        Alert.alert('Erro', json.message || 'Falha ao cadastrar notificação.');
+      }
+    } catch (error) {
+      console.error('Erro ao cadastrar a notificação:', error);
+      Alert.alert('Erro', 'Ocorreu um erro ao cadastrar a notificação. Tente novamente mais tarde.');
+    }
   }
 
   const notificacoesNaoLidas = notificacoes.filter(item => item.avisoVisto == false );
@@ -179,7 +211,7 @@ export default function Notificacoes({ handle }) {
 
           <Text style={styles.label}>Usuario</Text>
           <SelectDropdown
-            data={usuario}
+            data={usuarios}
             onSelect={(selectedItem) => {
               setUsuarioId(selectedItem.usuarioId);
             }}
@@ -196,7 +228,7 @@ export default function Notificacoes({ handle }) {
             renderItem={(item, isSelected) => {
               return (
                 <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
-                  <Text style={styles.dropdownItemTxtStyle}>{item.tipoMaquinaNome}</Text>
+                  <Text style={styles.dropdownItemTxtStyle}>{item.usuarioNome}</Text>
                 </View>
               );
             }}
@@ -206,15 +238,15 @@ export default function Notificacoes({ handle }) {
 
 <Text style={styles.label}>Tipo do Aviso</Text>
           <SelectDropdown
-            data={avisoTipo}
+            data={avisoTipos}
             onSelect={(selectedItem) => {
-              setAvisoTipo(selectedItem.avisoTipoId);
+              setAvisoTipoId(selectedItem.avisoTipoId);
             }}
             renderButton={(selectedItem, isOpened) => {
               return (
                 <View style={styles.inputSelect}>
                   <Text style={styles.dropdownButtonTxtStyle}>
-                    {(selectedItem && selectedItem.tipoMaquinaNome) || 'Selecione o fornecedor da Peça'}
+                    {(selectedItem && selectedItem.avisoTipoNome) || 'Selecione o fornecedor da Peça'}
                   </Text>
                   <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
                 </View>
@@ -223,7 +255,7 @@ export default function Notificacoes({ handle }) {
             renderItem={(item, isSelected) => {
               return (
                 <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
-                  <Text style={styles.dropdownItemTxtStyle}>{item.tipoMaquinaNome}</Text>
+                  <Text style={styles.dropdownItemTxtStyle}>{item.avisoTipoNome}</Text>
                 </View>
               );
             }}
@@ -241,6 +273,21 @@ export default function Notificacoes({ handle }) {
           </TouchableOpacity>
           </Animatable.View>
 </View>
+      )}
+      {step === 4 && (
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <Text style={styles.title}>Obrigado por cadastrar uma Máquina!</Text>
+          </View>
+          <TouchableOpacity
+            style={styles.buttonCadastro}
+            onPress={() => setStep(1)}
+          >
+            <Text style={styles.buttonText}>
+              Continuar
+            </Text>
+          </TouchableOpacity>
+        </View>
       )}
     </View>
   );
@@ -370,6 +417,22 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
 
+  button: {
+    backgroundColor: '#696767',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 10,
+    marginBottom: 40,
+    height: 70
+  },
+  buttonText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+
   inputSelect: {
     borderWidth: 1,
     borderColor: '#DDD',
@@ -411,5 +474,15 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '500',
     color: '#151E26',
+  },
+  buttonCadastro: {
+    backgroundColor: '#696767',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 10,
+    marginBottom: 10,
+    height: 70
   },
 });
