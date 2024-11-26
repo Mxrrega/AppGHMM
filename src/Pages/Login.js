@@ -106,14 +106,11 @@ export default function Login() {
   function RealizaLogin() {
 
     const dados = {
-      email,
       cpf,
       senha
     }
 
-    console.log(dados)
-
-    Login(email, cpf, senha);
+    Login( cpf, senha);
   }
 
   const handleContinue = () => {
@@ -156,14 +153,6 @@ export default function Login() {
             <View style={styles.header}>
               <Text style={styles.TituloPagInicial}>Seja Bem Vindo!</Text>
             </View>
-            <Text style={styles.label}>Email</Text>
-            <TextInput
-              value={email}
-              onChangeText={setEmail}
-              placeholder="Digite seu Email"
-              style={styles.input}
-            />
-
             <Text style={styles.label}>CPF</Text>
             <TextInput
               value={cpf}

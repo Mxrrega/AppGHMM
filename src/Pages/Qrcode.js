@@ -1,23 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, Image } from 'react-native';
-import { Camera  } from 'expo-camera';
+import { CameraView, useCameraPermissions, CameraType  } from 'expo-camera';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export default function QRCodeScanner({ handle }) {
 
+  const [permission, requestPermission] = useCameraPermissions();
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
   const [loading, setLoading] = useState(false);
   const [maquina, setMaquina] = useState(null);
+  const [facing, setFacing] = useState('back');
 
-  /*useEffect(() => {
-    const getBarCodeScannerPermissions = async () => {
-      const { status } = await Camera.requestPermissionsAsync();
-      setHasPermission(status === 'granted');
-    };
+  
+  
 
-    getBarCodeScannerPermissions();
-  }, []);*/
+  useEffect(() => {
+    requestPermission();
+  }, []);
+  
 
   const handleBarCodeScanned = async ({ data }) => {
     setScanned(true);
@@ -36,8 +37,9 @@ export default function QRCodeScanner({ handle }) {
 
   };
 
-  if (hasPermission === false) {
-    return <Text>Permissão de câmera negada</Text>;
+  if (!permission) {
+    // Camera permissions are still loading.
+    return <View />;
   }
 
   return (
@@ -51,9 +53,13 @@ export default function QRCodeScanner({ handle }) {
       {!maquina ? (
         <View style={styles.cameraBox}>
           <View style={styles.cameraBorder}>
-          <Camera
-            onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+          <CameraView
+            barcodeScannerSettings={{
+              barcodeTypes: ["qr"],
+            }}
+            onBarcodeScanned={(item) => handleBarCodeScanned( item )}
             style={styles.camera}
+            facing={facing}
           />
           </View>
           {scanned && loading ? (

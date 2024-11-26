@@ -6,45 +6,39 @@ export default function AuthProvider({ children }) {
 
     const [logado, setLogado] = useState(true);
     const [cargoId, setCargoId] = useState(null);
-    const [usuarioNome, setUsuarioNome] = useState(null);
+    const [usuario, setUsuario] = useState(null);
     const [error, setError] = useState(false);
 
-    async function Login(email, cpf, senha) {
-
-        console.log('chegou')
-        if (email !== "" && cpf !== "" && senha !== "") {
+    async function Login( cpf, senha) {
+        if ( cpf !== "" && senha !== "") {
             await fetch(process.env.EXPO_PUBLIC_URL + '/api/Usuario/Login', {
                 method: 'POST',
                 headers: {
                     'content-type': 'application/json'
                 },
                 body: JSON.stringify({
-                    usuarioEmail: email,
                     usuarioCpf: cpf,
                     usuarioSenha: senha
                 })
             })
                 .then(res => res.json())
                 .then(json => {
-                    if (json === true) {
-                        setLogado(true);
-                        setCargoId(json.cargoId);
-                        setUsuarioNome(json.usuarioNome);
-                        setError(false);
+                    if( json.usuarioId > 0 ) {
+                        setLogado( true );
+                        setUsuario( json );
                     } else {
-                        setError(true);
-                         console.log('corno2')
+                        setLogado( false );
+                        setError( true );
                     }
                 })
                 .catch(err => console.error('Erro ao fazer login:', err));
         } else {
             setError(true);
-            console.log('corno3')
         }
     }
 
     return (
-        <AuthContext.Provider value={{ logado, cargoId, usuarioNome, Login, error }}>
+        <AuthContext.Provider value={{ logado, cargoId, usuario: usuario, setUsuario: setUsuario, Login, error }}>
             {children}
         </AuthContext.Provider>
     );
