@@ -6,7 +6,7 @@ export default function Buscar() {
   const [query, setQuery] = useState('');
   const [machines, setMachines] = useState([]);
   const [error, setError] = useState(false);
-  const [selectedMachine, setSelectedMachine] = useState(null); // Estado para armazenar a máquina selecionada
+  const [selectedMachine, setSelectedMachine] = useState(null); 
 
   const searchMachines = async (searchText) => {
     if (searchText.length === 0) {
@@ -34,8 +34,7 @@ export default function Buscar() {
       console.error('Erro ao buscar máquinas:', err);
     }
   };
-
-  // Função que abre o modal com os detalhes da máquina
+  
   const handleShowDetails = async (maquinaId) => {
     try {
       const response = await fetch(process.env.EXPO_PUBLIC_URL + `/api/Maquina/GetMaquinaById/${maquinaId}`, {
@@ -202,7 +201,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
   },
   modalContent: {
-    backgroundColor: '#fff',
+    backgroundColor: '#444',
     padding: 20,
     borderRadius: 8,
     width: '80%',
@@ -212,6 +211,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
+    color: '#fff',
   },
   modalImage: {
     width: 120,
@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginVertical: 4,
     textAlign: 'left',
-    color: '#333',
+    color: '#fff',
   },
   bold: {
     fontWeight: 'bold',

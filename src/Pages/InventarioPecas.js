@@ -1,179 +1,283 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, Image, TextInput, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import SelectDropdown from 'react-native-select-dropdown';
 import * as Animatable from 'react-native-animatable';
 
 export default function InventarioPecas({ handle }) {
+
   const [step, setStep] = useState(1);
   const [expandedCategorias, setExpandedCategorias] = useState({});
-  const [categories, setCategories] = useState([]);
+
   const [nomePeca, setNomePeca] = useState('');
-  const [quantidadePeca, setQuantidadePeca] = useState('');
-  const [fornecedores, setFornecedores] = useState([]);
-  const [categoriaSelecionada, setCategoriaSelecionada] = useState(null);
-  const [fornecedorSelecionado, setFornecedorSelecionado] = useState(null);
+  const [categorias, setCategorias] = useState('');
+  const [pecas, setPecas] = useState('');
+
+  const handleContinue = () => {
+    if (step < 3) setStep(step + 1);
+  };
+
+  const handleBack = () => {
+    if (step > 1) setStep(step - 1);
+  };
 
   useEffect(() => {
     GetCategorias();
-    GetFornecedores();
+    GetPecas()
   }, []);
 
-  async function GetCategorias()  {
+  async function GetCategorias() {
     try {
       const response = await fetch(`${process.env.EXPO_PUBLIC_URL}/api/CategoriaPeca/GetAllCategoriaPecas`);
       const data = await response.json();
-      setCategories(data);
-      console.log('Categorias:', data);
-
+      setCategorias(data);
     } catch (error) {
       console.error('Erro ao buscar categorias:', error);
     }
-  };
+  }
 
-  async function GetFornecedores(){
+  async function GetPecas(categoriaPecaId) {
     try {
-      const response = await fetch(`${process.env.EXPO_PUBLIC_URL}/api/Fornecedor/GetAllFornecedores`);
+      const response = await fetch(process.env.EXPO_PUBLIC_URL + `/api/Peca/GetPecaById/${categoriaPecaId}`);
       const data = await response.json();
-      setFornecedores(data);
+      console.log(data);
+      setPecas(data)
     } catch (error) {
-      console.error('Erro ao buscar fornecedores:', error);
+      console.error('Erro ao buscar categorias:', error);
     }
-  };
+  }
+  const inventoryData = [
+    {
+      category: 'Parafusos e Porcas',
+      items: [
+        { name: 'Cabeça Sextavada', quantity: 50 },
+        { name: 'Phillips', quantity: 30 },
+        { name: 'Allen', quantity: 40 },
+        { name: 'M4', quantity: 100 },
+        { name: 'M6', quantity: 75 },
+        { name: 'M8', quantity: 60 }
+      ],
+      image: require('../img/Parafusos e porcas.png'),
+    },
+    {
+      category: 'Arruelas',
+      items: [
+        { name: 'Simples', quantity: 80 },
+        { name: 'Pressão', quantity: 90 },
+        { name: 'M3', quantity: 120 },
+        { name: 'M4', quantity: 110 },
+        { name: 'M5', quantity: 95 },
+        { name: 'M6', quantity: 100 },
+        { name: 'M8', quantity: 60 },
+        { name: 'M10', quantity: 50 }
+      ],
+      image: require('../img/Arruelas.png'),
+    },
+    {
+      category: 'Rolamentos',
+      items: [
+        { name: '6205', quantity: 25 },
+        { name: '6302', quantity: 15 },
+        { name: '6304', quantity: 30 }
+      ],
+      image: require('../img/Rolamentos.png'),
+    },
+    {
+      category: 'Correias',
+      items: [
+        { name: 'A (13x8)', quantity: 20 },
+        { name: 'B (17x11)', quantity: 10 },
+        { name: 'C (22x14)', quantity: 5 }
+      ],
+      image: require('../img/Correias.png'),
+    },
+    {
+      category: 'Filtros',
+      items: [
+        { name: 'Filtro de Óleo', quantity: 40 },
+        { name: 'Filtro de Ar', quantity: 35 },
+        { name: 'Filtro Combustível', quantity: 25 }
+      ],
+      image: require('../img/Filtros.png'),
+    },
+  ];
 
-  const toggleCategory = (categoryId) => {
+  const toggleCategory = (category) => {
     setExpandedCategorias((prevState) => ({
       ...prevState,
-      [categoryId]: !prevState[categoryId],
+      [category]: !prevState[category],
     }));
+    GetPecas(category);
   };
 
-  const handleRegister = async () => {
-    if (!nomePeca || !quantidadePeca || !categoriaSelecionada || !fornecedorSelecionado) {
-      alert('Preencha todos os campos!');
-      return;
-    }
-
+  async function alterarQTD(categoriaPecaId) {
     try {
-      const response = await fetch(`${process.env.EXPO_PUBLIC_URL}/api/pecas`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          nome: nomePeca,
-          quantidade: quantidadePeca,
-          categoriaId: categoriaSelecionada,
-          fornecedorId: fornecedorSelecionado,
-        }),
-      });
-
-      if (response.ok) {
-        alert('Peça cadastrada com sucesso!');
-        GetCategorias(); 
-        setStep(1); 
-      } else {
-        alert('Erro ao cadastrar peça');
-      }
-    } catch (error) {
-      console.error('Erro ao cadastrar peça:', error);
+        await fetch( process.env.EXPO_PUBLIC_URL + `/api/${categoriaPecaId}`, {
+            method: 'UPDATE',
+        });
+        setMaquinas(categoria.filter(CategoriaPeca => CategoriaPeca.CategoriaPecaId !== CategoriaPeca));
+    } catch (err) {
+        console.error('Erro ao alterar Quantidade:', err);
     }
-  };
+}
 
   return (
     <View style={styles.container}>
       {step === 1 && (
-        <Animatable.View animation="slideInRight" duration={400}>
-          <View style={styles.header}>
-            <TouchableOpacity onPress={() => handle(false)} style={styles.iconButton}>
-              <Icon name="arrow-left" size={24} color="#FFFFFF" />
-            </TouchableOpacity>
-            <Text style={styles.headerTitle}>Inventário de Peças</Text>
-            <TouchableOpacity onPress={() => setStep(2)} style={styles.iconButton}>
-              <Icon name="plus" size={24} color="#FFFFFF" />
-            </TouchableOpacity>
-          </View>
-          <FlatList
-  data={categories}
-  keyExtractor={(item) => item.Id}
-  renderItem={({ item }) => (
-    <View style={styles.categoryContainer}>
-      <TouchableOpacity onPress={() => toggleCategory(item.Id)} style={styles.categoria}>
-        <Image source={{ uri: item.imageUrl }} style={styles.largeImage} />
-        <Text style={styles.categoryTitle}>{item.categoriaPecaNome}</Text>
-        <Icon
-          name={expandedCategorias[item.Id] ? 'chevron-up' : 'chevron-down'}
-          style={styles.icone}
-        />
-      </TouchableOpacity>
-      {expandedCategorias[item.Id] && (
-        <View style={styles.itemsContainer}>
-          {item.pecas?.map((piece) => (
-            <Animatable.View animation="fadeInDownBig" duration={500} key={piece.id}>
-              <TouchableOpacity style={styles.itemRow}>
-                <Text style={styles.itemText}>• {piece.name}</Text>
-                <Text style={styles.quantityText}>{piece.quantity}</Text>
-              </TouchableOpacity>
-            </Animatable.View>
-          ))}
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => handle(false)} style={styles.iconButton}>
+            <Icon name="arrow-left" size={24} color="#FFFFFF" />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Inventário de Peças</Text>
+          <TouchableOpacity onPress={handleContinue} style={styles.iconButton}>
+            <Icon name="plus" size={24} color="#FFFFFF" />
+          </TouchableOpacity>
         </View>
       )}
-    </View>
-  )}
-/>
+      {step === 1 && (
+        <Animatable.View animation="slideInRight" duration={400}>
+          <FlatList
+            data={categorias}
+            keyExtractor={(item) => item.categoriaPecaNome}
+            renderItem={({ item }) => (
+              <View style={styles.categoryContainer}>
+                <TouchableOpacity onPress={() => toggleCategory(item.categoriaPecaId)} style={styles.categoria}>
+                  <Image source={{ uri: item.fotoUrl }} style={styles.largeImage} />
+                  <Text style={styles.categoryTitle}>{item.categoriaPecaNome}</Text>
+                  <Icon name={expandedCategorias[item.categoriaPecaId] ? 'chevron-up' : 'chevron-down'} style={styles.icone} />
+                </TouchableOpacity>
+                {expandedCategorias[item.pecaId] && (
+                  <View style={styles.itemsContainer}>
+                    {item.items.map((pecas, index) => (
+                      <Animatable.View animation="fadeInDownBig" duration={500} key={index}>
+                        <TouchableOpacity style={styles.itemRow} onPress={alterarQTD}>
+                          <Text style={styles.itemText}>• {pecas.pecaNome}</Text>
+                          <Text style={styles.quantityText}>{pecas.quantidadeEstoque}</Text>
+                        </TouchableOpacity>
+                      </Animatable.View>
+                    ))}
+                  </View>
+                )}
+              </View>
+            )}
+          />
         </Animatable.View>
       )}
 
       {step === 2 && (
         <ScrollView>
           <View style={styles.headerRegistro}>
-            <TouchableOpacity onPress={() => setStep(1)} style={styles.backButtonRegistro}>
-              <Icon name="arrow-left" size={24} color="white" />
+            <TouchableOpacity onPress={handleBack} style={styles.backButtonRegistro}>
+              <MaterialCommunityIcons name="arrow-left" size={24} color="white" />
             </TouchableOpacity>
-            <Animatable.Text animation="fadeInUp" delay={25} style={styles.title}>
-              Registro de Peça
-            </Animatable.Text>
+            <Animatable.Text animation="fadeInUp" delay={25} style={styles.title}>Registro de Peça</Animatable.Text>
           </View>
-          <Animatable.View animation="fadeInUp" delay={50}>
-            <Text style={styles.label}>Nome da Peça</Text>
-            <TextInput
-              value={nomePeca}
-              onChangeText={setNomePeca}
-              placeholder="Digite o nome da peça"
-              style={styles.input}
-            />
-            <Text style={styles.label}>Quantidade de Peça</Text>
-            <TextInput
-              value={quantidadePeca}
-              onChangeText={setQuantidadePeca}
-              placeholder="Digite a quantidade"
-              keyboardType="decimal-pad"
-              style={styles.input}
-            />
-            <Text style={styles.label}>Fornecedor</Text>
-            <SelectDropdown
-              data={fornecedores}
-              onSelect={(selectedItem) => setFornecedorSelecionado(selectedItem.id)}
-              renderButtonText={(item) => item.name}
-              defaultButtonText="Selecione o fornecedor"
-              buttonStyle={styles.inputSelect}
-            />
-            <Text style={styles.label}>Categoria</Text>
-            <SelectDropdown
-              data={categories}
-              onSelect={(selectedItem) => setCategoriaSelecionada(selectedItem.id)}
-              renderButtonText={(item) => item.name}
-              defaultButtonText="Selecione a categoria"
-              buttonStyle={styles.inputSelect}
-            />
-            <TouchableOpacity style={styles.button} onPress={handleRegister}>
-              <Text style={styles.buttonText}>Cadastrar</Text>
-            </TouchableOpacity>
+        <Animatable.View animation="fadeInUp" delay={50}>
+          <Text style={styles.label}>Nome da Peça</Text>
+          <TextInput
+            value={nomePeca}
+            onChangeText={setNomePeca}
+            placeholder="Digite o nome da Peça"
+            style={styles.input}
+          />
+
+          <Text style={styles.label}>Quantidade de Peça</Text>
+          <TextInput
+            value={nomePeca}
+            onChangeText={setNomePeca}
+            placeholder="Digite a quantidade de Peça"
+            keyboardType='decimal-pad'
+            style={styles.input}
+          />
+
+          <Text style={styles.label}>Fornecedor</Text>
+          <SelectDropdown
+            data={nomePeca}
+            onSelect={(selectedItem) => {
+              setNomePeca(selectedItem.MaquinaIdtipo);
+            }}
+            renderButton={(selectedItem, isOpened) => {
+              return (
+                <View style={styles.inputSelect}>
+                  <Text style={styles.dropdownButtonTxtStyle}>
+                    {(selectedItem && selectedItem.tipoMaquinaNome) || 'Selecione o fornecedor da Peça'}
+                  </Text>
+                  <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+                </View>
+              );
+            }}
+            renderItem={(item, isSelected) => {
+              return (
+                <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                  <Text style={styles.dropdownItemTxtStyle}>{item.tipoMaquinaNome}</Text>
+                </View>
+              );
+            }}
+            showsVerticalScrollIndicator={false}
+            dropdownStyle={styles.dropdownMenuStyle}
+          />
+
+          <Text style={styles.label}>Categoria da Peça</Text>
+          <SelectDropdown
+            data={nomePeca}
+            onSelect={(selectedItem) => {
+              setNomePeca(selectedItem.tipoMaquinaId);
+            }}
+            renderButton={(selectedItem, isOpened) => {
+              return (
+                <View style={styles.inputSelect}>
+                  <Text style={styles.dropdownButtonTxtStyle}>
+                    {(selectedItem && selectedItem.tipoMaquinaNome) || 'Selecione a categoria da Peça'}
+                  </Text>
+                  <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+                </View>
+              );
+            }}
+            renderItem={(item, isSelected) => {
+              return (
+                <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                  <Text style={styles.dropdownItemTxtStyle}>{item.tipoMaquinaNome}</Text>
+                </View>
+              );
+            }}
+            showsVerticalScrollIndicator={false}
+            dropdownStyle={styles.dropdownMenuStyle}
+          />
+
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handleContinue}
+          >
+            <Text style={styles.buttonText}>
+              Cadastrar
+            </Text>
+          </TouchableOpacity>
           </Animatable.View>
+
         </ScrollView>
       )}
+
+      {step > 2 && (
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <Text style={styles.title}>Obrigado por cadastrar uma Peça!</Text>
+          </View>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => handle(false)}
+          >
+            <Text style={styles.buttonText}>
+              Continuar
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+      )
+      }
     </View>
   );
-}
-
+};
 
 const styles = StyleSheet.create({
   container: {
