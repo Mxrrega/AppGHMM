@@ -9,16 +9,15 @@ export default function AuthProvider({ children }) {
     const [usuarioNome, setUsuarioNome] = useState(null);
     const [error, setError] = useState(false);
 
-    async function Login(email, cpf, senha) {
+    async function Login (cpf, senha) {
         console.log('chegou')
-        if (email !== "" && cpf !== "" && senha !== "") {
+        if (cpf !== "" && senha !== "") {
             await fetch(process.env.EXPO_PUBLIC_URL + '/api/Usuario/Login', {
                 method: 'POST',
                 headers: {
                     'content-type': 'application/json'
                 },
                 body: JSON.stringify({
-                    usuarioEmail: email,
                     usuarioCpf: cpf,
                     usuarioSenha: senha
                 })
